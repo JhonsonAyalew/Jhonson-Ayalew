@@ -10,9 +10,9 @@ const CONTACT_LINKS = [
 ];
 
 // EmailJS config — fill in your own IDs from emailjs.com (free)
-const EMAILJS_SERVICE_ID  = 'service_jhonson';   // replace after signup
-const EMAILJS_TEMPLATE_ID = 'template_contact';  // replace after signup
-const EMAILJS_PUBLIC_KEY  = 'YOUR_PUBLIC_KEY';   // replace after signup
+const EMAILJS_SERVICE_ID  = 'service_j041zyg';   // replace after signup
+const EMAILJS_TEMPLATE_ID = 'template_0cxw4yk';  // replace after signup
+const EMAILJS_PUBLIC_KEY  = 'EC5bBNREuqSI2vTcF';   // replace after signup
 const OWNER_EMAIL         = 'jhonsonayalew21@gmail.com';
 
 export default function ContactSection() {
