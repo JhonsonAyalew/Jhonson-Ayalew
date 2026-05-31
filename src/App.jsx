@@ -104,7 +104,7 @@ export default function App() {
         transform: 'translateX(-50%)',
         width: '700px',
         height: '500px',
-        background: 'radial-gradient(ellipse, rgba(139, 26, 26, 0.08), transparent 70%)',
+        background: 'radial-gradient(ellipse, rgba(0, 180, 255, 0.06), transparent 70%)',
         pointerEvents: 'none',
         zIndex: 0,
       }} />
