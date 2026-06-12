@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Radio } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { label: 'Home', mode: 'HERO', short: 'HM' },
-  { label: 'About', mode: 'ABOUT', short: 'AB' },
-  { label: 'Projects', mode: 'PROJECTS_GRID', short: 'PR' },
-  { label: 'Skills', mode: 'SKILLS_GRID', short: 'SK' },
-  { label: 'Contact', mode: 'CONTACT', short: 'CT' },
+  { label: 'Home',     mode: 'HERO' },
+  { label: 'About',    mode: 'ABOUT' },
+  { label: 'Projects', mode: 'PROJECTS_GRID' },
+  { label: 'Skills',   mode: 'SKILLS_GRID' },
+  { label: 'Contact',  mode: 'CONTACT' },
 ];
 
 export default function NavBar({ currentMode, onNavigate }) {
@@ -15,9 +16,9 @@ export default function NavBar({ currentMode, onNavigate }) {
   const isActive = (item) =>
     currentMode === item.mode ||
     (item.mode === 'PROJECTS_GRID' && currentMode === 'PROJECT_DETAIL') ||
-    (item.mode === 'SKILLS_GRID' && currentMode === 'SKILL_DETAIL') ||
-    (item.mode === 'ABOUT' && currentMode === 'ABOUT_DETAIL') ||
-    (item.mode === 'HERO' && currentMode === 'HERO_DETAIL');
+    (item.mode === 'SKILLS_GRID'   && currentMode === 'SKILL_DETAIL')   ||
+    (item.mode === 'ABOUT'         && currentMode === 'ABOUT_DETAIL')   ||
+    (item.mode === 'HERO'          && currentMode === 'HERO_DETAIL');
 
   const handleNav = (mode) => { onNavigate(mode); setMenuOpen(false); };
 
@@ -26,135 +27,109 @@ export default function NavBar({ currentMode, onNavigate }) {
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
+        transition={{ delay: 0.3, duration: 0.4 }}
         style={{
           position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-          padding: '0 16px', height: '54px',
+          padding: '0 5%', height: '60px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           borderBottom: '1px solid var(--border-subtle)',
-          background: 'rgba(2,4,8,0.94)',
-          backdropFilter: 'blur(24px)',
+          background: 'rgba(10,25,40,0.88)',
+          backdropFilter: 'blur(20px)',
         }}
       >
-        {/* Top accent line */}
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, var(--cyan-dim), transparent)', opacity: 0.7 }} />
-
         {/* Logo */}
-        <button
-          onClick={() => handleNav('HERO')}
+        <button onClick={() => handleNav('HERO')} data-cursor
           style={{ background: 'none', border: 'none', cursor: 'none', display: 'flex', alignItems: 'center', gap: '10px' }}
-          data-cursor
         >
           <div style={{
-            width: '30px', height: '30px',
-            background: 'transparent',
-            border: '1px solid var(--cyan-dim)',
+            width: '34px', height: '34px',
+            background: 'linear-gradient(135deg, var(--primary-teal), var(--primary-emerald))',
+            borderRadius: '9px',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: '0.75rem', color: 'var(--cyan)',
-            boxShadow: '0 0 12px rgba(0,180,255,0.3)',
-            fontFamily: 'Orbitron',
-          }}>◈</div>
-          <div>
-            <span style={{ fontFamily: 'Orbitron', fontSize: '0.85rem', fontWeight: '700', letterSpacing: '0.12em', color: 'var(--text-primary)' }}>JA</span>
-            <span style={{ fontFamily: 'Share Tech Mono', fontSize: '0.44rem', letterSpacing: '0.22em', color: 'var(--cyan-dim)', display: 'block', lineHeight: 1, marginTop: '1px' }}>OPERATIVE</span>
-          </div>
+            fontSize: '0.85rem', fontFamily: 'Outfit', fontWeight: '800', color: 'var(--bg-deep)',
+            boxShadow: '0 4px 16px rgba(45,212,191,0.3)',
+          }}>JA</div>
+          <span style={{ fontFamily: 'Outfit', fontWeight: '800', fontSize: '1.05rem', letterSpacing: '0.04em', color: 'var(--text-light)' }}>
+            Auto<span className="gradient-text">Dev.</span>
+          </span>
         </button>
 
-        {/* Desktop nav */}
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }} className="desktop-nav">
-          {NAV_ITEMS.map((item, i) => (
-            <button
-              key={item.mode}
-              onClick={() => handleNav(item.mode)}
+        {/* Desktop nav links */}
+        <div style={{ display: 'flex', gap: '28px', alignItems: 'center' }} className="desktop-nav">
+          {NAV_ITEMS.map(item => (
+            <button key={item.mode} onClick={() => handleNav(item.mode)} data-cursor
               style={{
-                background: isActive(item) ? 'rgba(0,180,255,0.07)' : 'none',
-                border: isActive(item) ? '1px solid rgba(0,180,255,0.2)' : '1px solid transparent',
-                color: isActive(item) ? 'var(--cyan)' : 'var(--text-muted)',
-                fontFamily: 'Orbitron', fontSize: '0.5rem',
-                letterSpacing: '0.2em', textTransform: 'uppercase',
-                cursor: 'none', transition: 'all 0.2s',
-                padding: '6px 12px',
-                position: 'relative',
+                background: 'none', border: 'none',
+                color: isActive(item) ? 'var(--primary-teal)' : 'var(--text-muted)',
+                fontFamily: 'Inter', fontSize: '0.85rem', fontWeight: '500',
+                letterSpacing: '0.04em',
+                cursor: 'none', transition: 'color 0.25s',
+                position: 'relative', padding: '4px 0',
               }}
-              data-cursor
-              onMouseEnter={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = 'var(--border-subtle)'; } }}
-              onMouseLeave={e => { if (!isActive(item)) { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'transparent'; } }}
             >
-              <span style={{ fontSize: '0.38rem', color: isActive(item) ? 'var(--cyan-dim)' : 'var(--text-dim)', marginRight: '5px' }}>
-                {String(i + 1).padStart(2, '0')}
-              </span>
               {item.label}
+              {isActive(item) && (
+                <motion.div layoutId="nav-ul" style={{
+                  position: 'absolute', bottom: '-4px', left: 0, right: 0,
+                  height: '2px', borderRadius: '2px',
+                  background: 'linear-gradient(90deg, var(--primary-teal), var(--primary-emerald))',
+                  boxShadow: '0 0 8px var(--primary-teal)',
+                }} />
+              )}
             </button>
           ))}
         </div>
 
-        {/* Right: status + hamburger */}
+        {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.46rem', color: 'var(--teal)', letterSpacing: '0.18em', fontFamily: 'Orbitron' }} className="available-label">
-            <div className="status-dot" />
-            <span>LIVE</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '0.62rem', color: 'var(--text-muted)', letterSpacing: '0.12em' }} className="available-label">
+            <Radio size={11} color="var(--primary-teal)" strokeWidth={2} style={{ animation: 'statusBlink 2s ease-in-out infinite' }} />
+            AVAILABLE
           </div>
-          <button
-            onClick={() => setMenuOpen(v => !v)}
-            style={{ background: 'none', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', cursor: 'none', marginLeft: '4px', fontSize: '0.75rem', lineHeight: 1, padding: '6px 10px', fontFamily: 'Share Tech Mono' }}
-            className="hamburger-btn"
-            data-cursor
-          >
-            {menuOpen ? '✕' : '≡'}
+          <button onClick={() => handleNav('CONTACT')} className="btn-teal" data-cursor
+            style={{ padding: '7px 18px', fontSize: '0.7rem' }}>
+            Let's Talk
+          </button>
+          <button onClick={() => setMenuOpen(v => !v)} data-cursor
+            style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'none', padding: '4px', display: 'flex', alignItems: 'center' }}
+            className="hamburger-btn">
+            {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
         </div>
       </motion.nav>
 
-      {/* Mobile drawer */}
+      {/* Mobile menu */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8, clipPath: 'inset(0 0 100% 0)' }}
-            animate={{ opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)' }}
-            exit={{ opacity: 0, clipPath: 'inset(0 0 100% 0)' }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
             style={{
-              position: 'fixed', top: '54px', left: 0, right: 0, zIndex: 99,
-              background: 'rgba(2,4,8,0.98)',
-              backdropFilter: 'blur(24px)',
+              position: 'fixed', top: '60px', left: 0, right: 0, zIndex: 99,
+              background: 'rgba(10,25,40,0.98)', backdropFilter: 'blur(20px)',
               borderBottom: '1px solid var(--border-subtle)',
-            }}
-          >
-            {/* Top scan line */}
-            <div style={{ height: '1px', background: 'linear-gradient(90deg, transparent, var(--cyan-dim), transparent)' }} />
-            <div style={{ padding: '12px 16px' }}>
-              {NAV_ITEMS.map((item, i) => (
-                <button
-                  key={item.mode}
-                  onClick={() => handleNav(item.mode)}
-                  style={{
-                    background: 'none', border: 'none',
-                    color: isActive(item) ? 'var(--cyan)' : 'var(--text-secondary)',
-                    fontFamily: 'Orbitron', fontSize: '0.62rem',
-                    letterSpacing: '0.2em', textTransform: 'uppercase',
-                    cursor: 'pointer', textAlign: 'left',
-                    padding: '14px 0',
-                    borderBottom: '1px solid var(--border-subtle)',
-                    display: 'flex', alignItems: 'center', gap: '12px',
-                    width: '100%',
-                    transition: 'color 0.2s',
-                  }}
-                >
-                  <span style={{ fontSize: '0.42rem', color: 'var(--cyan-dim)', fontFamily: 'Share Tech Mono', minWidth: '24px' }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  {isActive(item) ? '▶ ' : ''}{item.label}
-                  {isActive(item) && <div style={{ marginLeft: 'auto', width: '20px', height: '1px', background: 'var(--cyan)' }} />}
-                </button>
-              ))}
-            </div>
+              padding: '8px 5% 16px',
+            }}>
+            {NAV_ITEMS.map(item => (
+              <button key={item.mode} onClick={() => handleNav(item.mode)}
+                style={{
+                  display: 'block', width: '100%', background: 'none', border: 'none',
+                  color: isActive(item) ? 'var(--primary-teal)' : 'var(--text-secondary)',
+                  fontFamily: 'Inter', fontSize: '0.9rem', fontWeight: '500',
+                  cursor: 'pointer', textAlign: 'left',
+                  padding: '12px 0',
+                  borderBottom: '1px solid var(--border-subtle)',
+                  transition: 'color 0.2s',
+                }}>
+                {isActive(item) ? '→ ' : '  '}{item.label}
+              </button>
+            ))}
           </motion.div>
         )}
       </AnimatePresence>
 
       <style>{`
-        @media(min-width:601px){ .hamburger-btn{display:none!important} }
-        @media(max-width:600px){ .desktop-nav{display:none!important} .available-label{display:none!important} }
+        @media(min-width: 601px) { .hamburger-btn { display: none !important; } }
+        @media(max-width: 600px) { .desktop-nav { display: none !important; } .available-label { display: none !important; } }
       `}</style>
     </>
   );
