@@ -2,37 +2,44 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Github, Linkedin, Globe, MapPin, Zap, ArrowRight,
-  Database, Code2, Cpu, Users
+  Code2, Cpu, Users, Briefcase, Award, Clock
 } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer, cardItem } from '../utils/animationVariants.js';
 
 const ROLES = [
+  'AI Automation Engineer',
+  'Python Developer',
   'Data Engineer',
-  'Python Automator',
   'Web Scraping Expert',
-  'AI Data Labeler',
   'Full-Stack Builder',
 ];
 
 const STATS = [
-  { num: '6+', label: 'Live Projects', icon: Zap, color: 'var(--primary-teal)' },
-  { num: '3yr', label: 'Experience',   icon: Code2, color: 'var(--primary-emerald)' },
-  { num: '10+', label: 'Tech Stack',   icon: Cpu, color: '#3b82f6' },
-  { num: '★4.9', label: 'Upwork',      icon: Users, color: '#f59e0b' },
+  { num: '5+', label: 'Live Projects', icon: Briefcase },
+  { num: '2yr', label: 'Experience', icon: Clock },
+  { num: '12+', label: 'Tech Stack', icon: Cpu },
+  { num: '3.68', label: 'CGPA', icon: Award },
 ];
 
 const SOCIAL = [
-  { label: 'GitHub',   url: 'https://github.com/JhonsonAyalew',                          Icon: Github },
-  { label: 'LinkedIn', url: 'https://linkedin.com/in/jhonson-ayalew-a3738138b',           Icon: Linkedin },
-  { label: 'Portfolio',url: 'https://portfolio-chi-seven-11.vercel.app',                  Icon: Globe },
+  { label: 'GitHub', url: 'https://github.com/JhonsonAyalew', Icon: Github },
+  { label: 'LinkedIn', url: 'https://www.linkedin.com/in/johnson-ayalew/', Icon: Linkedin },
+  { label: 'Upwork', url: 'https://www.upwork.com/freelancers/~011fb9ce9920513a41', Icon: Globe },
 ];
 
-const TECH_PILLS = ['Python', 'React', 'Node.js', 'Playwright', 'pandas', 'PostgreSQL', 'AI Labeling', 'ETL'];
+const TECH_PILLS = ['Python', 'Claude API', 'Flask', 'React', 'PostgreSQL', 'Groq AI', 'ETL', 'BeautifulSoup'];
 
 export default function HeroSection({ onSuggest }) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
-  const [phase, setPhase] = useState('typing'); // 'typing' | 'waiting' | 'erasing'
+  const [phase, setPhase] = useState('typing');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Typewriter effect
   useEffect(() => {
@@ -40,7 +47,7 @@ export default function HeroSection({ onSuggest }) {
     let timeout;
     if (phase === 'typing') {
       if (displayed.length < target.length) {
-        timeout = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), 68);
+        timeout = setTimeout(() => setDisplayed(target.slice(0, displayed.length + 1)), 60);
       } else {
         timeout = setTimeout(() => setPhase('waiting'), 1800);
       }
@@ -48,7 +55,7 @@ export default function HeroSection({ onSuggest }) {
       timeout = setTimeout(() => setPhase('erasing'), 400);
     } else if (phase === 'erasing') {
       if (displayed.length > 0) {
-        timeout = setTimeout(() => setDisplayed(d => d.slice(0, -1)), 36);
+        timeout = setTimeout(() => setDisplayed(d => d.slice(0, -1)), 32);
       } else {
         setRoleIndex(i => (i + 1) % ROLES.length);
         setPhase('typing');
@@ -59,78 +66,163 @@ export default function HeroSection({ onSuggest }) {
 
   return (
     <motion.div
-      variants={pageTransition} initial="hidden" animate="visible" exit="exit"
+      variants={pageTransition}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
       style={{
-        width: '100%', height: '100%',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '0 5%', position: 'relative', overflow: 'hidden',
+        width: '100%',
+        minHeight: '100vh',
+        paddingTop: '80px',
+        paddingBottom: '40px',
+        paddingLeft: '5%',
+        paddingRight: '5%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      {/* Decorative grid lines */}
+      {/* Decorative grid */}
       <div style={{
-        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
-        backgroundImage: 'linear-gradient(rgba(45,212,191,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(45,212,191,0.03) 1px, transparent 1px)',
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
         backgroundSize: '60px 60px',
       }} />
 
-      {/* Radial glow */}
+      {/* Subtle radial glow */}
       <div style={{
-        position: 'absolute', top: '50%', left: '50%',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '700px', height: '500px',
-        background: 'radial-gradient(ellipse at center, rgba(45,212,191,0.07) 0%, transparent 68%)',
-        pointerEvents: 'none', zIndex: 0,
+        width: '800px',
+        height: '600px',
+        background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%)',
+        pointerEvents: 'none',
+        zIndex: 0,
       }} />
 
-      <div style={{ width: '100%', maxWidth: '1020px', position: 'relative', zIndex: 1 }}>
+      <div style={{
+        width: '100%',
+        maxWidth: '1100px',
+        position: 'relative',
+        zIndex: 1,
+      }}>
 
-        {/* ── TOP ROW: location + status ── */}
+        {/* ── TOP: Location & Status ── */}
         <motion.div
-          variants={fadeInUp} initial="hidden" animate="visible"
-          style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '28px', flexWrap: 'wrap' }}
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: isMobile ? '20px' : '32px',
+            flexWrap: 'wrap',
+          }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <MapPin size={11} color="var(--primary-teal)" strokeWidth={2} />
-            <span style={{ fontFamily: 'Inter', fontSize: '0.62rem', color: 'var(--text-muted)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            <MapPin size={isMobile ? 10 : 12} color="#999999" strokeWidth={1.5} />
+            <span style={{
+              fontFamily: 'Inter',
+              fontSize: isMobile ? '0.55rem' : '0.65rem',
+              color: '#888888',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+            }}>
               Addis Ababa, Ethiopia
             </span>
           </div>
-          <div style={{ width: '1px', height: '12px', background: 'var(--border-subtle)' }} />
+          <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--primary-teal)', boxShadow: '0 0 8px var(--primary-teal)', animation: 'statusBlink 2s ease-in-out infinite' }} />
-            <span style={{ fontFamily: 'Inter', fontSize: '0.62rem', color: 'var(--primary-teal)', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: '500' }}>
-              Available for hire
+            <div style={{
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: '#ffffff',
+              boxShadow: '0 0 12px rgba(255,255,255,0.3)',
+              animation: 'statusBlink 2s ease-in-out infinite',
+            }} />
+            <span style={{
+              fontFamily: 'Inter',
+              fontSize: isMobile ? '0.55rem' : '0.65rem',
+              color: '#cccccc',
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              fontWeight: '500',
+            }}>
+              Open to Work
+            </span>
+          </div>
+          <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{
+              fontFamily: 'Inter',
+              fontSize: isMobile ? '0.5rem' : '0.6rem',
+              color: '#666666',
+              letterSpacing: '0.08em',
+            }}>
+              ETH · 9.0250°N 38.7469°E
             </span>
           </div>
         </motion.div>
 
-        {/* ── MAIN TWO-COLUMN LAYOUT ── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '48px', alignItems: 'center' }} className="hero-main-grid">
+        {/* ── MAIN CONTENT ── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+          gap: isMobile ? '32px' : '60px',
+          alignItems: 'center',
+        }}>
 
           {/* LEFT COLUMN */}
           <motion.div variants={staggerContainer} initial="hidden" animate="visible">
 
             {/* Name */}
-            <motion.div variants={fadeInUp} style={{ marginBottom: '16px' }}>
+            <motion.div variants={fadeInUp} style={{ marginBottom: isMobile ? '12px' : '20px' }}>
               <div style={{
-                fontFamily: 'Outfit', fontWeight: '800',
-                fontSize: 'clamp(3.2rem, 9vw, 6.4rem)',
-                lineHeight: '0.9', letterSpacing: '-0.03em',
-                color: 'var(--text-light)',
+                fontFamily: 'Outfit',
+                fontWeight: '800',
+                fontSize: isMobile ? 'clamp(2.8rem, 12vw, 4.2rem)' : 'clamp(4rem, 8vw, 6.5rem)',
+                lineHeight: '0.9',
+                letterSpacing: '-0.03em',
+                color: '#ffffff',
                 position: 'relative',
               }}>
-                <span style={{ display: 'block' }} className="glitch-container" data-text="JHONSON">JHONSON</span>
-                <span className="gradient-text" style={{ display: 'block' }}>AYALEW</span>
+                <span style={{ display: 'block' }} className="glitch-container" data-text="JOHNSON">JOHNSON</span>
+                <span style={{
+                  display: 'block',
+                  background: 'linear-gradient(135deg, #ffffff, #888888)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}>AYALEW</span>
               </div>
             </motion.div>
 
             {/* Typewriter role */}
-            <motion.div variants={fadeInUp} style={{ marginBottom: '20px', minHeight: '34px', display: 'flex', alignItems: 'center' }}>
+            <motion.div variants={fadeInUp} style={{
+              marginBottom: isMobile ? '16px' : '24px',
+              minHeight: isMobile ? '28px' : '38px',
+              display: 'flex',
+              alignItems: 'center',
+            }}>
               <div style={{
-                fontFamily: 'Space Mono', fontSize: 'clamp(0.9rem, 2.2vw, 1.15rem)',
-                color: 'var(--primary-teal)', letterSpacing: '0.02em', display: 'flex', alignItems: 'center', gap: '2px',
+                fontFamily: 'Space Mono',
+                fontSize: isMobile ? 'clamp(0.75rem, 2vw, 0.95rem)' : 'clamp(1rem, 2.2vw, 1.25rem)',
+                color: '#cccccc',
+                letterSpacing: '0.02em',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
               }}>
-                <span style={{ color: 'var(--primary-emerald)', marginRight: '6px', opacity: 0.7 }}>&gt;</span>
+                <span style={{ color: '#666666', marginRight: '4px', opacity: 0.7 }}>&gt;</span>
                 {displayed}
                 <span className="typing-cursor" />
               </div>
@@ -138,114 +230,217 @@ export default function HeroSection({ onSuggest }) {
 
             {/* Bio */}
             <motion.p variants={fadeInUp} style={{
-              fontFamily: 'Inter', fontSize: '0.88rem',
-              color: 'var(--text-muted)', marginBottom: '26px',
-              lineHeight: '1.85', maxWidth: '460px',
+              fontFamily: 'Inter',
+              fontSize: isMobile ? '0.8rem' : '0.95rem',
+              color: '#888888',
+              marginBottom: isMobile ? '20px' : '28px',
+              lineHeight: '1.8',
+              maxWidth: isMobile ? '100%' : '520px',
             }}>
-              CS graduate building production-grade automation pipelines, data systems, and web products — shipping for global clients from Addis Ababa via Upwork and direct contracts.
+              {isMobile ? (
+                <>
+                  I build AI-powered automation systems that eliminate hours of manual work —
+                  scraping thousands of records, scoring them with LLMs, and pushing results
+                  to dashboards, email, or Telegram.
+                </>
+              ) : (
+                <>
+                  I build AI-powered automation systems that eliminate hours of manual work —
+                  scraping thousands of records, scoring them with LLMs, and pushing results
+                  to dashboards, email, or Telegram. Every project ships with real data and zero wasted clicks.
+                </>
+              )}
             </motion.p>
 
             {/* CTA buttons */}
-            <motion.div variants={fadeInUp} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '28px' }}>
+            <motion.div variants={fadeInUp} style={{
+              display: 'flex',
+              gap: isMobile ? '10px' : '14px',
+              flexWrap: 'wrap',
+              marginBottom: isMobile ? '20px' : '28px',
+            }}>
               <button
-                className="btn-teal"
+                className="btn-white"
                 onClick={() => onSuggest('Show me your projects')}
                 data-cursor
-                style={{ padding: '12px 28px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '8px' }}
+                style={{
+                  padding: isMobile ? '10px 20px' : '12px 30px',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
               >
                 View Projects
-                <ArrowRight size={14} strokeWidth={2.5} />
+                <ArrowRight size={isMobile ? 12 : 14} strokeWidth={2.5} />
               </button>
               <button
-                onClick={() => onSuggest('How can I hire Jhonson?')}
+                onClick={() => onSuggest('How can I hire Johnson?')}
                 data-cursor
                 style={{
-                  padding: '12px 24px', background: 'transparent',
-                  border: '1px solid var(--border-subtle)', borderRadius: '30px',
-                  color: 'var(--text-muted)', fontFamily: 'Inter',
-                  fontSize: '0.8rem', fontWeight: '500',
-                  cursor: 'none', transition: 'all 0.3s',
-                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: isMobile ? '10px 18px' : '12px 26px',
+                  background: 'transparent',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '30px',
+                  color: '#888888',
+                  fontFamily: 'Inter',
+                  fontSize: isMobile ? '0.7rem' : '0.8rem',
+                  fontWeight: '500',
+                  cursor: 'none',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--primary-teal)'; e.currentTarget.style.color = 'var(--text-light)'; e.currentTarget.style.boxShadow = '0 0 24px rgba(45,212,191,0.1)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.boxShadow = 'none'; }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                  e.currentTarget.style.color = '#ffffff';
+                  e.currentTarget.style.background = 'rgba(255,255,255,0.04)';
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                  e.currentTarget.style.color = '#888888';
+                  e.currentTarget.style.background = 'transparent';
+                }}
               >
                 Hire Me
               </button>
             </motion.div>
 
             {/* Tech stack pills */}
-            <motion.div variants={fadeInUp} style={{ display: 'flex', flexWrap: 'wrap', gap: '7px', marginBottom: '26px' }}>
+            <motion.div variants={fadeInUp} style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: isMobile ? '5px' : '8px',
+              marginBottom: isMobile ? '18px' : '28px',
+            }}>
               {TECH_PILLS.map((t, i) => (
                 <span key={t} style={{
-                  padding: '4px 12px', borderRadius: '20px',
-                  background: i === 0 ? 'rgba(45,212,191,0.12)' : 'rgba(45,212,191,0.05)',
-                  border: `1px solid ${i === 0 ? 'rgba(45,212,191,0.4)' : 'rgba(45,212,191,0.13)'}`,
-                  fontSize: '0.6rem', letterSpacing: '0.06em',
-                  color: i === 0 ? 'var(--primary-teal)' : 'var(--text-muted)',
-                  fontFamily: 'Inter', fontWeight: '500',
+                  padding: isMobile ? '3px 10px' : '4px 14px',
+                  borderRadius: '20px',
+                  background: i < 2 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
+                  border: `1px solid ${i < 2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)'}`,
+                  fontSize: isMobile ? '0.5rem' : '0.6rem',
+                  letterSpacing: '0.06em',
+                  color: i < 2 ? '#cccccc' : '#666666',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
                   transition: 'all 0.25s',
                 }}>{t}</span>
               ))}
             </motion.div>
 
             {/* Social links */}
-            <motion.div variants={fadeInUp} style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+            <motion.div variants={fadeInUp} style={{
+              display: 'flex',
+              gap: isMobile ? '16px' : '20px',
+              alignItems: 'center',
+              flexWrap: 'wrap',
+            }}>
               {SOCIAL.map(({ label, url, Icon }) => (
-                <a key={label} href={url} target="_blank" rel="noreferrer" data-cursor
+                <a
+                  key={label}
+                  href={url}
+                  target="_blank"
+                  rel="noreferrer"
+                  data-cursor
                   title={label}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '6px',
-                    fontSize: '0.68rem', letterSpacing: '0.08em',
-                    color: 'var(--text-muted)', textDecoration: 'none',
-                    textTransform: 'uppercase', transition: 'all 0.25s',
-                    borderBottom: '1px solid transparent', paddingBottom: '1px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: isMobile ? '0.6rem' : '0.7rem',
+                    letterSpacing: '0.06em',
+                    color: '#666666',
+                    textDecoration: 'none',
+                    transition: 'all 0.25s',
+                    padding: '4px 0',
                   }}
-                  onMouseEnter={e => { e.currentTarget.style.color = 'var(--primary-teal)'; e.currentTarget.style.borderBottomColor = 'var(--primary-emerald)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderBottomColor = 'transparent'; }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.color = '#ffffff';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.color = '#666666';
+                    e.currentTarget.style.transform = 'translateX(0)';
+                  }}
                 >
-                  <Icon size={13} strokeWidth={1.75} />
+                  <Icon size={isMobile ? 14 : 16} strokeWidth={1.5} />
                   {label}
                 </a>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* RIGHT COLUMN — stat cards */}
+          {/* RIGHT COLUMN — Stats Grid */}
           <motion.div
-            variants={staggerContainer} initial="hidden" animate="visible"
-            style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '150px' }}
-            className="hero-stat-col"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : '1fr 1fr',
+              gap: isMobile ? '10px' : '14px',
+              alignContent: 'center',
+            }}
           >
-            {STATS.map(({ num, label, icon: Icon, color }) => (
+            {STATS.map(({ num, label, icon: Icon }) => (
               <motion.div
                 key={label}
                 variants={cardItem}
-                className="glass-card teal-glow-border"
-                style={{ padding: '18px 22px', borderRadius: '16px', textAlign: 'right', position: 'relative', overflow: 'hidden' }}
-                whileHover={{ y: -4, x: -2, transition: { duration: 0.18 } }}
+                style={{
+                  padding: isMobile ? '16px 14px' : '22px 20px',
+                  borderRadius: '14px',
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.04)',
+                  textAlign: 'center',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                }}
+                whileHover={{
+                  y: -4,
+                  background: 'rgba(255,255,255,0.04)',
+                  borderColor: 'rgba(255,255,255,0.08)',
+                  transition: { duration: 0.2 }
+                }}
               >
-                {/* Icon top-left */}
                 <div style={{
-                  position: 'absolute', top: '14px', left: '14px',
-                  width: '26px', height: '26px', borderRadius: '8px',
-                  background: `${color}18`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginBottom: isMobile ? '6px' : '8px',
                 }}>
-                  <Icon size={13} color={color} strokeWidth={2} />
+                  <div style={{
+                    width: isMobile ? '32px' : '40px',
+                    height: isMobile ? '32px' : '40px',
+                    borderRadius: '10px',
+                    background: 'rgba(255,255,255,0.04)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                    <Icon size={isMobile ? 16 : 20} color="#999999" strokeWidth={1.5} />
+                  </div>
                 </div>
-
                 <div style={{
-                  fontFamily: 'Outfit', fontWeight: '800',
-                  fontSize: '2rem', lineHeight: '1',
-                  color: color, letterSpacing: '-0.02em',
+                  fontFamily: 'Outfit',
+                  fontWeight: '800',
+                  fontSize: isMobile ? '1.6rem' : '2.4rem',
+                  lineHeight: '1',
+                  color: '#ffffff',
+                  letterSpacing: '-0.02em',
                 }}>
                   {num}
                 </div>
                 <div style={{
-                  fontSize: '0.5rem', letterSpacing: '0.2em',
-                  textTransform: 'uppercase', color: 'var(--text-muted)',
-                  marginTop: '4px', fontFamily: 'Inter', fontWeight: '500',
+                  fontSize: isMobile ? '0.45rem' : '0.5rem',
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: '#666666',
+                  marginTop: '4px',
+                  fontFamily: 'Inter',
+                  fontWeight: '500',
                 }}>
                   {label}
                 </div>
@@ -254,32 +449,61 @@ export default function HeroSection({ onSuggest }) {
           </motion.div>
         </div>
 
-        {/* ── BOTTOM BAR — coordinates + prompt ── */}
+        {/* ── BOTTOM BAR ── */}
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
           style={{
-            marginTop: '32px', paddingTop: '18px',
-            borderTop: '1px solid var(--border-subtle)',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            flexWrap: 'wrap', gap: '8px',
+            marginTop: isMobile ? '28px' : '40px',
+            paddingTop: isMobile ? '14px' : '20px',
+            borderTop: '1px solid rgba(255,255,255,0.04)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '8px',
           }}
         >
-          <span style={{ fontFamily: 'Space Mono', fontSize: '0.55rem', color: 'var(--text-muted)', letterSpacing: '0.16em' }}>
-            ETH · 9.0320°N 38.7469°E · ADDIS ABABA
+          <span style={{
+            fontFamily: 'Space Mono',
+            fontSize: isMobile ? '0.45rem' : '0.55rem',
+            color: '#555555',
+            letterSpacing: '0.12em',
+          }}>
+            ETH · 9.0250°N 38.7469°E · ADDIS ABABA — OPEN TO SPONSORED ROLES
           </span>
-          <span style={{ fontFamily: 'Inter', fontSize: '0.6rem', color: 'var(--text-muted)', letterSpacing: '0.14em', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Database size={11} color="var(--primary-teal)" strokeWidth={2} />
+          <span style={{
+            fontFamily: 'Inter',
+            fontSize: isMobile ? '0.45rem' : '0.55rem',
+            color: '#555555',
+            letterSpacing: '0.1em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+          }}>
+            <div style={{
+              width: '4px',
+              height: '4px',
+              borderRadius: '50%',
+              background: '#666666',
+            }} />
             ASK THE AI ANYTHING BELOW
           </span>
         </motion.div>
       </div>
 
       <style>{`
-        @media(max-width:760px){
-          .hero-main-grid{ grid-template-columns:1fr !important; gap:24px !important; }
-          .hero-stat-col{ flex-direction:row !important; flex-wrap:wrap !important; gap:8px !important; }
-          .hero-stat-col > div{ flex:1; min-width:120px; text-align:left !important; }
-          .hero-stat-col > div > div:last-child { text-align:left !important; }
+        @keyframes statusBlink {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.3; transform: scale(0.8); }
+        }
+        
+        @media (max-width: 480px) {
+          .glitch-container::before,
+          .glitch-container::after {
+            display: none;
+          }
         }
       `}</style>
     </motion.div>
