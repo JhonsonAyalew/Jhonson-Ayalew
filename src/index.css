@@ -8,19 +8,19 @@
    DESIGN TOKENS — Teal/Navy from j.html
    ========================================= */
 :root {
-  --bg-deep: #0a1928;
-  --bg-surface: #1a2c3e;
-  --bg-glass: rgba(26, 44, 62, 0.45);
-  --bg-elevated: rgba(26, 44, 62, 0.7);
-  --primary-teal: #2dd4bf;
-  --primary-emerald: #10b981;
-  --primary-blue: #3b82f6;
-  --text-light: #f0f9ff;
-  --text-secondary: #cbd5e1;
-  --text-muted: #94a3b8;
-  --border-subtle: rgba(45, 212, 191, 0.12);
-  --border-glow: rgba(45, 212, 191, 0.35);
-  --chat-height: 160px;
+  --bg-deep:         #1a2230;
+  --bg-surface:      #222A33;
+  --bg-glass:        rgba(34, 42, 51, 0.55);
+  --bg-elevated:     rgba(34, 42, 51, 0.80);
+  --primary-teal:    #449399;
+  --primary-emerald: #3a7d82;
+  --primary-blue:    #4a8fa3;
+  --text-light:      #f0f4f8;
+  --text-secondary:  #c5cdd8;
+  --text-muted:      #8a97a8;
+  --border-subtle:   rgba(68, 147, 153, 0.14);
+  --border-glow:     rgba(68, 147, 153, 0.38);
+  --chat-height:     160px;
   --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
