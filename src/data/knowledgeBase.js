@@ -1,210 +1,205 @@
 export const PROJECTS = [
   {
     id: 1,
-    title: 'Sales Automation System',
-    shortDesc: 'Python-powered end-to-end sales pipeline automation',
-    tags: ['Python', 'Automation', 'CRM', 'Data'],
+    title: 'MediaWire — AI Press Intelligence Desk',
+    shortDesc: 'Full-stack AI journalist database and PR outreach platform',
+    tags: ['Python', 'Flask', 'React', 'Claude API', 'AI'],
     featured: true,
-    color: '#c42020',
-    icon: '⚡',
-    github: 'https://github.com/JhonsonAyalew/python-projects/tree/main/sales-automation-system',
+    icon: '📡',
+    github: 'https://github.com/JhonsonAyalew/MediaWire-Press-Intelligence-Desk',
     details: {
-      description: 'A comprehensive sales automation system built in Python that streamlines the entire sales pipeline — from lead capture and data enrichment to follow-up scheduling and reporting. Automates sales record management, invoice generation, and reporting workflows — reducing manual effort and improving operational efficiency by over 70%.',
-      tech: ['Python', 'pandas', 'SQLite', 'smtplib', 'schedule', 'openpyxl', 'CSV', 'API Integration'],
-      highlights: ['Lead capture & enrichment', 'Automated follow-up scheduling', 'Pipeline stage tracking', 'Invoice generation automation', 'Sales reporting & dashboards', 'CRM data sync'],
+      description: 'Full-stack journalist database and AI-powered PR outreach platform. Scrapes journalist contact data from CNBC, WIRED, AP News, and CNET using BeautifulSoup. Scores and ranks each journalist using Claude AI based on relevance. Auto-generates personalized pitch emails for each contact. Includes a built-in conversational AI assistant for PR teams — all delivered inside a dark-themed React dashboard.',
+      tech: ['Python', 'Flask', 'React', 'Vite', 'Claude API', 'SQLite', 'BeautifulSoup', 'JavaScript'],
+      highlights: [
+        'Scrapes CNBC, WIRED, AP News & CNET',
+        'Claude AI journalist scoring & ranking',
+        'Auto-generates personalized pitch emails',
+        'Built-in AI assistant for PR teams',
+        'Dark-themed React + Flask dashboard',
+        'Modular outlet scraping engine',
+      ],
       status: 'Open Source — GitHub',
       year: '2024',
     }
   },
   {
     id: 2,
-    title: 'Smart University System',
-    shortDesc: 'Full-stack university management & intelligence platform',
-    tags: ['Python', 'Flask', 'AI', 'Education'],
+    title: 'Media Intelligence Suite',
+    shortDesc: '6 enterprise desktop tools for media intelligence & PR outreach',
+    tags: ['Python', 'Tkinter', 'Google Sheets', 'Automation', 'SMTP'],
     featured: false,
-    color: '#8b1a1a',
-    icon: '🎓',
-    github: 'https://github.com/JhonsonAyalew/python-projects/tree/main/smart-university-system',
+    icon: '🗞️',
+    github: 'https://github.com/JhonsonAyalew/media-intelligence-suite',
     details: {
-      description: 'A smart university management system with AI-assisted features for student tracking, course management, grade analytics, and intelligent scheduling. Built to serve real institutions in Ethiopia.',
-      tech: ['Python', 'Flask', 'SQLAlchemy', 'React', 'Chart.js', 'SQLite'],
-      highlights: ['Student record management', 'AI-driven grade analytics', 'Course & schedule management', 'Attendance tracking system', 'Performance reporting', 'Admin dashboard'],
+      description: 'Six enterprise-grade Tkinter desktop applications for media intelligence and PR outreach automation. Covers CNBC, Business Insider, AP News, CNET, The Verge, and WIRED. Each app scrapes journalist contacts, decodes Cloudflare-protected emails, deduplicates contacts, scores them for relevance, syncs all data to Google Sheets in real time, and sends personalized outreach emails via SMTP — all from a polished desktop GUI.',
+      tech: ['Python', 'Tkinter', 'BeautifulSoup', 'Google Sheets API', 'Pandas', 'SMTP', 'Requests'],
+      highlights: [
+        'Covers 6 major media outlets',
+        'Cloudflare email protection decoder',
+        'Google Sheets real-time sync',
+        'Multi-level contact deduplication',
+        'Relevance scoring engine',
+        'Bulk personalized SMTP email outreach',
+      ],
       status: 'Open Source — GitHub',
       year: '2024',
     }
   },
   {
     id: 3,
-    title: 'Scrape–Transform–Notify',
-    shortDesc: 'Multi-source web scraper with transformation & alerts pipeline',
-    tags: ['Python', 'Scraping', 'ETL', 'Automation'],
+    title: 'CPA Data Ingestion Pipeline',
+    shortDesc: 'Enterprise 5-stage ETL system for 100,000+ CPA license records',
+    tags: ['Python', 'PostgreSQL', 'ETL', 'Data Engineering', 'Pandas'],
     featured: false,
-    color: '#6b1515',
-    icon: '🔍',
-    github: 'https://github.com/JhonsonAyalew/automation-tools/tree/main/scape-transform-notify',
+    icon: '🔧',
+    github: 'https://github.com/JhonsonAyalew/cpa-data-ingestion-pipeline',
     details: {
-      description: 'End-to-end ETL pipeline for extracting, transforming, validating, and delivering structured data automatically with completion notifications. Scrapes top-tier news sites (Forbes, CNBC, NYT, and 10+ others), transforms and enriches the data, then dispatches smart notifications. Also handles CPA individual lists and American business data ingestion.',
-      tech: ['Python', 'BeautifulSoup', 'Playwright', 'pandas', 'PostgreSQL', 'Telegram API', 'REST APIs', 'Automation'],
-      highlights: ['Forbes, CNBC, NYT + 10 premium sources', 'CPA individual data ingestion', 'Smart transformation layer', 'Deduplication & enrichment', 'Multi-channel notifications', 'Scheduled pipeline runs', 'Google Sheets sync'],
-      status: 'Production — Active',
+      description: 'End-to-end 5-stage ETL system for processing NASBA CPA license data. Stage 1: file parsing and normalization. Stage 2: chunked data streaming into PostgreSQL optimized for low-RAM servers. Stage 3: fuzzy-match deduplication using Jaro-Winkler distance and bigram similarity. Stage 4: full audit logging with SHA-256 file verification for data integrity. Stage 5: clean export and reporting delivered via Tkinter GUI.',
+      tech: ['Python', 'PostgreSQL', 'Pandas', 'Tkinter', 'Jaro-Winkler', 'SHA-256', 'Bigram Similarity'],
+      highlights: [
+        'Processes 100,000+ records with zero data loss',
+        'Jaro-Winkler + bigram fuzzy deduplication',
+        'SHA-256 audit verification',
+        'Chunked streaming for low-RAM servers',
+        '5-stage pipeline architecture',
+        'Desktop GUI for non-technical users',
+      ],
+      status: 'Open Source — GitHub',
       year: '2024',
     }
   },
   {
     id: 4,
-    title: 'Moresh — Decentralized Chat',
-    shortDesc: 'P2P encrypted chat app built with React + Node.js backend',
-    tags: ['React', 'Node.js', 'P2P', 'Security'],
+    title: 'Ethiopian Jobs Aggregator Bot',
+    shortDesc: 'AI-powered job scraper with automated Telegram channel posting',
+    tags: ['Python', 'Groq AI', 'Telegram', 'Supabase', 'Automation'],
     featured: false,
-    color: '#4a0f0f',
-    icon: '🔐',
-    github: 'https://github.com/JhonsonAyalew/backend-node-react/tree/main/Downloads/my-moresh-app/Moresh',
+    icon: '🤖',
+    github: 'https://github.com/JhonsonAyalew/ethiopian-jobs-bot',
     details: {
-      description: 'Moresh is a decentralized, privacy-first chat application. Built with React frontend and Node.js backend with peer-to-peer architecture, no central servers, and end-to-end encryption for all communications.',
-      tech: ['React', 'Node.js', 'Express', 'WebSocket', 'Encryption', 'P2P'],
-      highlights: ['No central server infrastructure', 'End-to-end encrypted messages', 'Real-time P2P messaging', 'React UI + Node backend', 'Zero metadata logging', 'Privacy-first architecture'],
-      status: 'Active Development',
+      description: 'Fully automated job aggregation bot built for the Ethiopian job market. Scrapes multiple Ethiopian job platforms on a scheduled cycle. Uses Groq AI to intelligently extract required qualifications and job details from raw listings. Applies multi-level fingerprint deduplication to prevent duplicate posts. Stores all data in Supabase and posts curated listings to a Telegram channel automatically — runs 24/7 with zero human intervention.',
+      tech: ['Python', 'Groq AI', 'Supabase', 'Telegram Bot API', 'BeautifulSoup', 'Requests'],
+      highlights: [
+        'Multi-platform job scraping on schedule',
+        'Groq AI qualification extraction',
+        'Multi-level fingerprint deduplication',
+        'Supabase cloud storage',
+        'Telegram Bot API auto-posting',
+        'Fully autonomous — runs 24/7',
+      ],
+      status: 'Live & Running',
       year: '2024',
     }
   },
   {
     id: 5,
-    title: 'concreterent.com',
-    shortDesc: 'Full-stack business website for concrete equipment rental',
-    tags: ['React', 'Next.js', 'Node.js', 'Web'],
+    title: 'ConcreteRent.com',
+    shortDesc: 'Full-stack concrete equipment rental platform — live in production',
+    tags: ['React', 'Flask', 'Python', 'PostgreSQL', 'Full-Stack'],
     featured: false,
-    color: '#8b1a1a',
-    icon: '🏗',
+    icon: '🏗️',
     github: null,
     details: {
-      description: 'Co-developed and deployed a professional heavy equipment rental website for a construction company, working closely with partner Hurunguu (hurunguu.com) from design through launch. Built a fully responsive interface using React.js and Next.js, ensuring smooth performance across all devices.',
-      tech: ['React', 'Next.js', 'Node.js', 'MongoDB', 'Express', 'Tailwind CSS', 'Vercel'],
-      highlights: ['Live production website', 'Equipment catalog & listings', 'Rental inquiry system', 'Partner project with Hurunguu', 'Mobile-first responsive design', 'Clean UI/UX design', 'SEO optimized', 'Stable deployment'],
+      description: 'Full-stack concrete equipment rental website designed and delivered end-to-end for a client. Built the complete React frontend including equipment catalog, booking and inquiry flow, and fully mobile-responsive UI. Built the Python/Flask backend with full REST API, database integration, and business logic. Managed the entire project independently from requirements to deployment. Live at concreterent.com.',
+      tech: ['React', 'Flask', 'Python', 'JavaScript', 'PostgreSQL', 'REST API', 'Vite'],
+      highlights: [
+        'Live production website at concreterent.com',
+        'Full React frontend — catalog & booking',
+        'Python/Flask backend with REST API',
+        'Mobile-responsive design',
+        'Complete end-to-end solo delivery',
+        'Real users served daily',
+      ],
       status: 'Live — concreterent.com',
-      year: '2024',
-    }
-  },
-  {
-    id: 6,
-    title: 'Upwork: PR Vibe Scraper',
-    shortDesc: 'Top-tier news scraping & PR data pipeline on Upwork',
-    tags: ['Python', 'Scraping', 'Upwork', 'Data'],
-    featured: false,
-    color: '#6b1515',
-    icon: '📰',
-    github: null,
-    details: {
-      description: 'Freelance data engineering work on Upwork: building automation systems to collect and structure data from high-profile websites including The New York Times, Forbes, and CNBC. Automated reporting pipelines and synchronized extracted data directly into Google Sheets, significantly reducing manual research time.',
-      tech: ['Python', 'Playwright', 'BeautifulSoup', 'pandas', 'PostgreSQL', 'REST APIs', 'Google Sheets API'],
-      highlights: ['Forbes, CNBC, NYT + 10 premium sources', 'Structured data output pipelines', 'Google Sheets automation sync', 'American CPA individual lists', 'News trend aggregation', 'Reduced manual research time'],
-      status: 'Freelance — Upwork',
-      year: '2025',
-    }
-  },
-  {
-    id: 7,
-    title: 'Automated Price Tracker',
-    shortDesc: 'Real-time price monitoring bot with multi-source alerts',
-    tags: ['Python', 'Scraping', 'Automation', 'Alerts'],
-    featured: false,
-    color: '#1a4a2e',
-    icon: '📈',
-    github: 'https://github.com/JhonsonAyalew',
-    details: {
-      description: 'Python bot that monitors product prices from multiple sources in real time, normalizes the data across sources, and sends automated alerts for timely decision-making. Designed for clients needing competitive pricing intelligence without manual tracking.',
-      tech: ['Python', 'BeautifulSoup', 'Scrapy', 'Requests', 'Automation'],
-      highlights: ['Real-time multi-source monitoring', 'Price normalization engine', 'Automated alert system', 'Timely decision-making support', 'Configurable price thresholds', 'Lightweight & schedulable'],
-      status: 'Open Source — GitHub',
       year: '2024',
     }
   },
 ];
 
 export const SKILLS = [
-  { id: 'python', name: 'Python', category: 'Languages', level: 93, desc: 'Primary language — automation pipelines, web scraping, data engineering, backend APIs, and AI integration.', relatedProjects: [1, 2, 3] },
-  { id: 'automation', name: 'Automation & ETL', category: 'Data & Automation', level: 91, desc: 'End-to-end pipeline design: scrape, transform, load, notify. Production systems running 24/7 on real data.', relatedProjects: [1, 3, 6] },
-  { id: 'scraping', name: 'Web Scraping', category: 'Data & Automation', level: 90, desc: 'Playwright, BeautifulSoup, Scrapy, Selenium — handles JS-heavy sites, anti-bot bypasses, and structured data extraction at scale.', relatedProjects: [3, 6, 7] },
-  { id: 'react', name: 'React', category: 'Frontend', level: 87, desc: 'Advanced React with hooks, context, Framer Motion, performance optimization and production-grade component architecture.', relatedProjects: [4, 5] },
-  { id: 'nodejs', name: 'Node.js', category: 'Backend', level: 80, desc: 'REST APIs, WebSockets, Express, authentication, database integration, and real-time backends.', relatedProjects: [4, 5] },
-  { id: 'data-engineering', name: 'Data Engineering', category: 'Data & Automation', level: 85, desc: 'Data ingestion, cleaning, transformation, and delivery pipelines. PostgreSQL, SQLite, pandas, Excel automation, Google Sheets sync.', relatedProjects: [1, 3] },
-  { id: 'ai-integration', name: 'AI Integration', category: 'AI', level: 83, desc: 'LLM API integration (GPT-4, Claude), AI-assisted data labeling, prompt engineering for production systems.', relatedProjects: [2] },
-  { id: 'ai-labeling', name: 'AI Data Labeling', category: 'AI', level: 88, desc: 'Expert AI data labeling and annotation — annotation quality, RLHF datasets, fine-tuning data pipelines.', relatedProjects: [2] },
-  { id: 'javascript', name: 'JavaScript', category: 'Languages', level: 82, desc: 'Modern ES2024, async patterns, DOM manipulation, browser APIs, and full-stack JS.', relatedProjects: [4, 5] },
-  { id: 'security', name: 'Ethical Hacking', category: 'Security', level: 80, desc: 'Penetration testing, network security, cryptography, and security-first system architecture.', relatedProjects: [4] },
-  { id: 'ui-ux', name: 'UI/UX Design', category: 'Design', level: 82, desc: 'Figma, design systems, motion design, and pixel-perfect frontend implementation.', relatedProjects: [5] },
-  { id: 'mongodb', name: 'MongoDB & SQL', category: 'Backend', level: 76, desc: 'MongoDB, PostgreSQL, SQLite — schema design, query optimization, and data modeling.', relatedProjects: [1, 2, 5] },
-  { id: 'office', name: 'Microsoft Office & Google', category: 'Tools', level: 85, desc: 'Professional reports in Word, data tables and analytical spreadsheets in Excel, stakeholder slide decks in PowerPoint, and Google Sheets/Docs automation.', relatedProjects: [1, 6] },
-  { id: 'nextjs', name: 'Next.js', category: 'Frontend', level: 78, desc: 'Server-side rendering, static site generation, and production-grade React applications with Next.js.', relatedProjects: [5] },
+  { id: 'python',           name: 'Python',              category: 'Languages',          level: 93, desc: 'Primary language — automation pipelines, web scraping, data engineering, backend APIs, and AI integration.', relatedProjects: [1, 2, 3] },
+  { id: 'automation',       name: 'Automation & ETL',    category: 'Data & Automation',  level: 92, desc: 'End-to-end pipeline design: scrape, transform, load, notify. Production systems running 24/7 on real data.', relatedProjects: [2, 3, 4] },
+  { id: 'scraping',         name: 'Web Scraping',        category: 'Data & Automation',  level: 91, desc: 'BeautifulSoup, Requests, Playwright — handles JS-heavy sites, Cloudflare bypasses, and structured data extraction at scale.', relatedProjects: [1, 2, 4] },
+  { id: 'ai-integration',   name: 'AI Integration',      category: 'AI',                 level: 88, desc: 'LLM API integration — Claude API (Anthropic) and Groq AI for scoring, ranking, extraction, and personalized content generation.', relatedProjects: [1, 4] },
+  { id: 'data-engineering', name: 'Data Engineering',    category: 'Data & Automation',  level: 87, desc: 'Data ingestion, cleaning, fuzzy deduplication, ETL pipeline design, and PostgreSQL. SHA-256 audit logging and chunked streaming.', relatedProjects: [3] },
+  { id: 'flask',            name: 'Flask',               category: 'Backend',            level: 85, desc: 'REST API design, database integration, server-side business logic, and backend architecture for production applications.', relatedProjects: [1, 5] },
+  { id: 'react',            name: 'React',               category: 'Frontend',           level: 85, desc: 'Advanced React with hooks, context, Framer Motion, and production-grade component architecture.', relatedProjects: [1, 5] },
+  { id: 'llm-prompting',    name: 'LLM Prompt Engineering', category: 'AI',              level: 84, desc: 'Crafting precise prompts for Claude API and Groq to reliably extract, score, and generate structured content in production systems.', relatedProjects: [1, 4] },
+  { id: 'telegram-bots',    name: 'Telegram Bot API',    category: 'Automation & Bots',  level: 86, desc: 'Building fully automated Telegram bots for scheduled content delivery, job posting, and notification workflows.', relatedProjects: [4] },
+  { id: 'postgresql',       name: 'PostgreSQL & SQLite', category: 'Databases',          level: 82, desc: 'Schema design, query optimization, chunked imports, and data modeling for production ETL pipelines and web applications.', relatedProjects: [3, 5] },
+  { id: 'supabase',         name: 'Supabase',            category: 'Databases',          level: 80, desc: 'Cloud PostgreSQL via Supabase for bot storage, real-time syncing, and serverless backend data management.', relatedProjects: [4] },
+  { id: 'pandas',           name: 'Pandas',              category: 'Data & Automation',  level: 88, desc: 'Data transformation, cleaning, analysis, and export pipelines for large structured datasets.', relatedProjects: [2, 3] },
+  { id: 'javascript',       name: 'JavaScript',          category: 'Languages',          level: 82, desc: 'Modern ES2024, async patterns, DOM manipulation, and full-stack JS for React frontends and REST integrations.', relatedProjects: [1, 5] },
+  { id: 'google-sheets',    name: 'Google Sheets API',   category: 'Tools',              level: 85, desc: 'Real-time data sync from automation pipelines directly into Google Sheets for client reporting and data delivery.', relatedProjects: [2] },
+  { id: 'tkinter',          name: 'Tkinter GUI',         category: 'Frontend',           level: 83, desc: 'Building polished desktop GUI applications for enterprise data tools that non-technical users can operate.', relatedProjects: [2, 3] },
+  { id: 'sql',              name: 'SQL',                 category: 'Languages',          level: 84, desc: 'Complex queries, schema design, joins, indexing, and database optimization for relational data systems.', relatedProjects: [3, 5] },
+  { id: 'git',              name: 'Git & GitHub',        category: 'Tools',              level: 88, desc: 'Version control, branching strategies, open-source project management, and collaborative development workflows.', relatedProjects: [1, 2, 3, 4, 5] },
 ];
 
 export const ABOUT_DETAILS = {
   location: {
-    title: 'Mersa, Ethiopia',
-    content: "Based in Mersa, Ethiopia — operating fully globally. I work with clients across the US, Europe, and beyond with zero timezone friction. Ethiopia's tech scene is growing fast and I'm proud to represent it at a world-class level. Fully remote-ready, async-first, and available on Upwork for international contracts."
+    title: 'Addis Ababa, Ethiopia',
+    content: "Based in Addis Ababa, Ethiopia — operating fully globally. I work with clients across the US, Europe, and beyond with zero timezone friction. I'm open to full-time remote roles, sponsored positions in Europe, and international freelance contracts. Fully async-first and available on Upwork."
   },
   education: {
     title: 'BSc Computer Science — Ambo University',
-    content: "BSc in Computer Science graduate from Ambo University (2021–2024) with a strong foundation in algorithms, data structures, software engineering, and systems design. My academic background gives me the theoretical depth that powers my practical engineering. I complement formal education with continuous self-learning — staying sharp on AI, automation, and modern web technologies. Also certified in Python Programming from FreeCodeCamp (2024–2025) and completed Employment Skills & Job Readiness Training."
+    content: "BSc in Computer Science graduate from Ambo University (2021–2024) with a CGPA of 3.68/4.0. Strong foundation in algorithms, data structures, software engineering, and database systems. I complement formal education with continuous self-learning — staying sharp on AI APIs, automation, and modern web technologies. Also certified in Scientific Computing with Python from freeCodeCamp (2024–2025)."
   },
   experience: {
-    title: '3+ Years Production',
-    content: "3+ years building real production systems — not tutorials. From Python automation tools published on GitHub, to a live business website (concreterent.com), to active Upwork freelancing scraping Forbes, CNBC, and the NYT. Every year I've pushed into harder problems: web → data engineering → AI systems → decentralized protocols."
+    title: '2+ Years Production Experience',
+    content: "2+ years building real production systems — not tutorials. From AI-powered press intelligence platforms to enterprise ETL pipelines processing 100,000+ records, to live client websites and Telegram bots running 24/7. Active on Upwork for international freelance contracts. Open to sponsored roles in Europe and full-time remote positions."
   },
   upwork: {
     title: 'Upwork Freelancer',
-    content: "Active on Upwork as a PR Automation & Web Scraping Specialist (2025–Present). My specialty: building automation systems to collect and structure data from high-profile websites, developing scraping and API integration workflows, automating reporting pipelines and syncing data into Google Sheets. I deliver structured, clean, production-ready data — significantly reducing manual research time for clients."
+    content: "Active on Upwork as a Python Automation & Web Scraping Specialist. Delivering automation systems, ETL pipelines, web scraping, and AI API integration services to international clients. I respond within 24 hours and deliver clean, documented, production-ready code."
   },
-  hurunguu: {
-    title: 'Partner — Hurunguu',
-    content: "I work in partnership with Hurunguu (hurunguu.com) — a tech company based in Ethiopia. Together we built and deployed concreterent.com for a concrete equipment rental business. I handled the technical side: architecture, development with React.js and Next.js, deployment, and maintenance."
+  mediawire: {
+    title: 'MediaWire — AI Press Intelligence',
+    content: "Built MediaWire — a full-stack press intelligence platform that scrapes journalist data from CNBC, WIRED, AP News, and CNET, scores them with Claude AI, and auto-generates personalized pitch emails. Includes a conversational AI assistant for PR teams. This is my most complex project — real Flask + React + LLM production system."
   },
-  aiLabeling: {
-    title: 'AI Data Labeling',
-    content: "Expert in AI data labeling — one of my core service offerings on Upwork and for direct clients. I work on annotation projects for RLHF datasets, fine-tuning data pipelines, and classification labeling. Quality-obsessed, with deep understanding of what makes good training data for modern LLMs."
+  aiIntegration: {
+    title: 'AI & LLM Integration',
+    content: "I integrate Claude API (Anthropic) and Groq AI into production automation tools for intelligent scoring, qualification extraction, and personalized content generation. Every LLM integration I build ships with structured outputs, error handling, and real production data — not demos."
   },
   certificates: {
     title: 'Certificates & Training',
-    content: "Certified in Python Programming from FreeCodeCamp (2024–2025). Completed Employment Skills & Job Readiness Training in 2024. These complement my BSc in Computer Science from Ambo University and my hands-on production experience across automation, data engineering, and full-stack development."
+    content: "Certified in Scientific Computing with Python from freeCodeCamp (2024–2025). Completed Employment Skills & Job Readiness Training (2024). BSc Computer Science from Ambo University — CGPA 3.68."
   }
 };
 
-export const KNOWLEDGE_BASE = `You are "Jhonson AI" — the digital representative of Jhonson Ayalew. Speak in first person as Jhonson's authentic voice. Be concise (2-4 sentences), confident, and technically precise.
+export const KNOWLEDGE_BASE = `You are "Johnson AI" — the digital representative of Johnson Ayalew. Speak in first person as Johnson's authentic voice. Be concise (2-4 sentences), confident, and technically precise.
 
-JHONSON AYALEW — REAL PROFILE:
-- Python Engineer | Data Automation | Web Developer
-- Based in Mersa, Ethiopia — works globally, fully remote
-- BSc in Computer Science, Ambo University (2021–2024)
-- 3+ years production experience
-- Phone: +251 977 797 756
-- Email: jhonsonayalew21@gmail.com
+JOHNSON AYALEW — REAL PROFILE:
+- AI Automation Engineer | Python Developer | Full-Stack Developer
+- Based in Addis Ababa, Ethiopia — works globally, fully remote
+- BSc Computer Science, Ambo University (2021–2024), CGPA 3.68
+- 2+ years production experience
+- Email: JhonsonAyalew21@gmail.com
 - GitHub: github.com/JhonsonAyalew
-- LinkedIn: linkedin.com/in/jhonson-ayalew-a3738138b
-- Portfolio: jhonson-ayalew.vercel.app
-- Active on Upwork as PR Automation & Web Scraping Specialist (2025–Present)
+- LinkedIn: linkedin.com/in/johnson-ayalew
+- Upwork: upwork.com/freelancers/~011fb9ce9920513a41
+- Open to full-time, sponsored, and remote positions
 
 REAL PROJECTS:
-1. Sales Automation System (Python/pandas) — automates sales records, invoices, reporting
-2. Smart University System (Python/Flask/React) — AI-assisted university management for Ethiopian institutions
-3. Scrape-Transform-Notify (Python/ETL) — production pipeline scraping Forbes, CNBC, NYT, 10+ premium sites + CPA data, syncs to Google Sheets
-4. Moresh — Decentralized Chat (React/Node.js) — P2P encrypted messaging app
-5. concreterent.com — Live business website built with partner company Hurunguu, React.js + Next.js
-6. Upwork PR Vibe Scraper — Freelance automation pipeline, NYT/Forbes/CNBC + American CPA lists, Google Sheets sync
-7. Automated Price Tracker — Python bot monitoring product prices in real time with multi-source alerts
+1. MediaWire — AI Press Intelligence Desk (Python/Flask/React/Claude API) — scrapes journalists from CNBC, WIRED, AP News & CNET, scores with Claude AI, generates pitch emails
+2. Media Intelligence Suite (Python/Tkinter) — 6 enterprise desktop tools for PR outreach across 6 major outlets, Google Sheets sync, Cloudflare email decoding
+3. CPA Data Ingestion Pipeline (Python/PostgreSQL/Pandas) — 5-stage ETL for 100,000+ records, Jaro-Winkler fuzzy dedup, SHA-256 audit logging
+4. Ethiopian Jobs Aggregator Bot (Python/Groq AI/Supabase/Telegram) — fully automated, runs 24/7, posts curated jobs to Telegram
+5. ConcreteRent.com (React/Flask/Python) — full-stack equipment rental website, live in production
 
-REAL SKILLS: Python 93%, AI Data Labeling 88%, Automation/ETL 91%, Web Scraping 90% (Playwright, BeautifulSoup, Scrapy), React 87%, Data Engineering 85%, AI Integration 83%, JavaScript 82%, Next.js 78%, Node.js 80%, UI/UX 82%, Ethical Hacking 80%, MongoDB/SQL 76%, Microsoft Office & Google Suite 85%.
+REAL SKILLS: Python 93%, Automation/ETL 92%, Web Scraping 91%, AI Integration 88%, Data Engineering 87%, Flask 85%, React 85%, Telegram Bots 86%, LLM Prompt Engineering 84%, PostgreSQL/SQLite 82%, Supabase 80%, Pandas 88%, JavaScript 82%, Google Sheets API 85%, Tkinter GUI 83%, SQL 84%, Git 88%.
 
 EDUCATION & CERTS:
-- BSc Computer Science, Ambo University, 2021–2024
-- Python Programming Certificate, FreeCodeCamp, 2024–2025
+- BSc Computer Science, Ambo University, 2021–2024, CGPA 3.68
+- Scientific Computing with Python, freeCodeCamp, 2024–2025
 - Employment Skills & Job Readiness Training, 2024
 
-REFERENCE: Wakjira Bekele (MSc), Lecturer CS Dept., Ambo University — wakjirabekele2018@gmail.com / +251 922 966 541
-
 HIRING / WORK TOGETHER:
-If someone asks about working together, hiring me, collaboration, or job opportunities — tell them I am actively available for freelance contracts, remote roles, data engineering projects, and full-time positions. They can reach me directly at jhonsonayalew21@gmail.com or +251 977 797 756, or find me on Upwork. I respond within 24 hours.
+If someone asks about working together, hiring, collaboration, or job opportunities — tell them I am actively available for freelance contracts, remote roles, data engineering projects, and full-time sponsored positions. They can reach me at JhonsonAyalew21@gmail.com, or find me on Upwork. I respond within 24 hours.
 
 RULES:
 - Keep answers 2-4 sentences unless asked for more.
 - First person always ("I built...", "My work...").
 - Be confident and direct.
-- Never make up projects not listed above.`;
+- Never make up projects not listed above.
+- Always mention GitHub when discussing projects.`;
