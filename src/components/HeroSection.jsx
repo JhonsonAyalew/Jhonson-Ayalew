@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown } from 'lucide-react';
+import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown, Terminal } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer, cardItem } from '../utils/animationVariants.js';
 
 const ROLES = [
@@ -26,19 +26,25 @@ const SOCIAL = [
 
 const TECH_PILLS = ['Python', 'Claude API', 'Flask', 'React', 'PostgreSQL', 'Groq AI', 'ETL', 'BeautifulSoup'];
 
-// The signature element: his actual production pipeline shape, rendered as a
-// vertical rail on desktop and a horizontal scroller on mobile.
-const PIPELINE = [
-  { step: '01', label: 'Scrape', detail: 'Pull raw data from sites & APIs at scale' },
-  { step: '02', label: 'Score', detail: 'Rank & qualify with Claude / Groq AI' },
-  { step: '03', label: 'Deliver', detail: 'Push to dashboards, sheets, Telegram, email' },
+// The signature element: a live-looking terminal window running his actual
+// production pipeline (scrape -> score -> deliver), because that's the
+// realest, most characteristic artifact in his world — not a decorative card.
+const LOG_LINES = [
+  { type: 'cmd', text: 'scrape --source=web --pages=340' },
+  { type: 'out', text: '1,204 records collected in 6.1s' },
+  { type: 'cmd', text: 'score --model=claude-3.5-sonnet' },
+  { type: 'out', text: '87 leads qualified · 72% match rate' },
+  { type: 'cmd', text: 'deliver --to=sheets,telegram,email' },
+  { type: 'ok', text: 'pipeline complete — 0 errors' },
 ];
 
 export default function HeroSection({ onSuggest }) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [phase, setPhase] = useState('typing');
+  const [logCount, setLogCount] = useState(0);
 
+  // Role typewriter (the command line under the name)
   useEffect(() => {
     const target = ROLES[roleIndex];
     let timeout;
@@ -61,6 +67,17 @@ export default function HeroSection({ onSuggest }) {
     return () => clearTimeout(timeout);
   }, [displayed, phase, roleIndex]);
 
+  // Terminal log — reveals one line at a time, holds, then re-runs the "job"
+  useEffect(() => {
+    let timeout;
+    if (logCount < LOG_LINES.length) {
+      timeout = setTimeout(() => setLogCount(c => c + 1), 620);
+    } else {
+      timeout = setTimeout(() => setLogCount(0), 2600);
+    }
+    return () => clearTimeout(timeout);
+  }, [logCount]);
+
   return (
     <motion.div
       variants={pageTransition}
@@ -75,28 +92,67 @@ export default function HeroSection({ onSuggest }) {
         paddingRight: '5%',
         position: 'relative',
         overflow: 'hidden',
+        background: '#0a0b0d',
       }}
     >
-      {/* Scoped styles — upgrades the existing classNames + adds responsive rules.
-          Safe to merge into your global stylesheet instead if you prefer. */}
       <style>{`
-        .hero-shell{
-          display:grid;
-          grid-template-columns: 1.15fr 0.85fr;
-          gap:64px;
-          align-items:start;
-        }
-        @media (max-width:900px){
-          .hero-shell{ grid-template-columns:1fr; gap:44px; }
+        :root{
+          --void:#0a0b0d;
+          --surface:#131519;
+          --ink:#f6f4ef;
+          --muted:#8b8f94;
+          --amber:#ffab5e;
+          --cyan:#6fd6ff;
+          --ok:#7ee8a0;
         }
 
+        .hero-grid{
+          display:grid;
+          grid-template-columns: 1.15fr 0.85fr;
+          column-gap:64px;
+          row-gap:0;
+          grid-template-areas:
+            "eyebrow  eyebrow"
+            "headline terminal"
+            "cli      terminal"
+            "copy     terminal"
+            "actions  terminal"
+            "pills    stats"
+            "social   stats";
+        }
+        @media (max-width:900px){
+          .hero-grid{
+            grid-template-columns:1fr;
+            row-gap:26px;
+            grid-template-areas:
+              "eyebrow"
+              "headline"
+              "cli"
+              "terminal"
+              "copy"
+              "actions"
+              "pills"
+              "stats"
+              "social";
+          }
+        }
+        .area-eyebrow{ grid-area:eyebrow; }
+        .area-headline{ grid-area:headline; }
+        .area-cli{ grid-area:cli; }
+        .area-terminal{ grid-area:terminal; }
+        .area-copy{ grid-area:copy; }
+        .area-actions{ grid-area:actions; }
+        .area-pills{ grid-area:pills; }
+        .area-stats{ grid-area:stats; }
+        .area-social{ grid-area:social; }
+
         .gradient-text{
-          background: linear-gradient(135deg,#ffffff 0%, #c7d2fe 35%, #7dd3fc 65%, #ffffff 100%);
-          background-size:200% auto;
+          background: linear-gradient(135deg, var(--ink) 0%, var(--cyan) 40%, var(--amber) 75%, var(--ink) 100%);
+          background-size:220% auto;
           -webkit-background-clip:text;
           background-clip:text;
           color:transparent;
-          animation: heroGradientShift 7s ease-in-out infinite;
+          animation: heroGradientShift 8s ease-in-out infinite;
         }
         @keyframes heroGradientShift{
           0%,100%{ background-position:0% 50%; }
@@ -111,11 +167,11 @@ export default function HeroSection({ onSuggest }) {
           opacity:0; pointer-events:none; mix-blend-mode:screen;
         }
         .glitch-container:hover::before{
-          opacity:0.75; color:#7dd3fc; transform:translate(-2px,-1px);
+          opacity:0.75; color:var(--cyan); transform:translate(-2px,-1px);
           animation:heroGlitchA 0.5s steps(2,end) infinite;
         }
         .glitch-container:hover::after{
-          opacity:0.75; color:#f472b6; transform:translate(2px,1px);
+          opacity:0.75; color:var(--amber); transform:translate(2px,1px);
           animation:heroGlitchB 0.5s steps(2,end) infinite;
         }
         @keyframes heroGlitchA{
@@ -127,7 +183,7 @@ export default function HeroSection({ onSuggest }) {
 
         .typing-cursor{
           display:inline-block; width:2px; height:1.1em; margin-left:3px;
-          background:#ffffff; vertical-align:middle;
+          background:var(--amber); vertical-align:middle;
           animation: heroCursorBlink 0.9s step-end infinite;
         }
         @keyframes heroCursorBlink{ 0%,100%{ opacity:1; } 50%{ opacity:0; } }
@@ -137,50 +193,47 @@ export default function HeroSection({ onSuggest }) {
           50%{ opacity:0.4; transform:scale(0.75); }
         }
 
-        .glass-card{
-          background: linear-gradient(165deg, rgba(255,255,255,0.07), rgba(255,255,255,0.015));
+        /* ── Terminal window: the signature element ── */
+        .terminal-window{
+          background: linear-gradient(180deg, var(--surface) 0%, #0e1013 100%);
           border:1px solid rgba(255,255,255,0.09);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          position:relative;
+          border-radius:14px;
           overflow:hidden;
-          transition: border-color 0.3s ease, transform 0.3s ease;
+          position:relative;
+          box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
         }
-        .glass-card::before{
+        .terminal-window::after{
           content:'';
-          position:absolute; inset:0;
-          background: radial-gradient(circle at 25% -10%, rgba(125,211,252,0.12), transparent 55%);
-          pointer-events:none;
+          position:absolute; inset:0; pointer-events:none;
+          background: repeating-linear-gradient(
+            to bottom, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px,
+            transparent 1px, transparent 3px
+          );
+          mix-blend-mode:overlay;
         }
-        .glass-card:hover{ border-color: rgba(255,255,255,0.16); }
-
-        .pipeline-rail{ display:flex; flex-direction:column; position:relative; }
-        .pipeline-node{
-          display:flex; gap:16px; align-items:flex-start; position:relative;
-          padding-bottom:28px;
+        .terminal-titlebar{
+          display:flex; align-items:center; gap:8px;
+          padding:12px 16px;
+          border-bottom:1px solid rgba(255,255,255,0.06);
+          background:rgba(255,255,255,0.015);
         }
-        .pipeline-node:last-child{ padding-bottom:0; }
-        .pipeline-node-line{
-          position:absolute; left:19px; top:40px; bottom:0; width:1px;
-          background:linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0.02));
+        .terminal-dot{ width:9px; height:9px; border-radius:50%; }
+        .terminal-label{
+          margin-left:6px; font-family:'Space Mono', monospace; font-size:0.62rem;
+          letter-spacing:0.08em; color:var(--muted); display:flex; align-items:center; gap:6px;
         }
-        .pipeline-node:last-child .pipeline-node-line{ display:none; }
-        .pipeline-dot{
-          flex-shrink:0; width:38px; height:38px; border-radius:50%;
-          display:flex; align-items:center; justify-content:center;
-          font-family:'Space Mono', monospace; font-size:0.65rem; font-weight:700; color:#ffffff;
-          background: linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
-          border:1px solid rgba(255,255,255,0.16);
-          transition: all 0.3s ease;
+        .terminal-body{
+          padding:20px 18px 22px;
+          font-family:'Space Mono', monospace;
+          font-size:0.78rem;
+          line-height:1.9;
+          min-height:196px;
         }
-        .pipeline-node:hover .pipeline-dot{
-          border-color:#7dd3fc;
-          box-shadow:0 0 20px rgba(125,211,252,0.4);
-          transform:scale(1.08);
-        }
-        .pipeline-node:hover .pipeline-node-line{
-          background:linear-gradient(to bottom, rgba(125,211,252,0.4), rgba(255,255,255,0.02));
-        }
+        .term-line{ display:flex; gap:8px; align-items:baseline; }
+        .term-prompt{ color:var(--amber); flex-shrink:0; }
+        .term-cmd{ color:var(--ink); }
+        .term-out{ color:var(--muted); padding-left:18px; }
+        .term-ok{ color:var(--ok); padding-left:18px; }
 
         .hero-stat-strip{ display:flex; justify-content:space-between; gap:10px; }
         .stat-block{ display:flex; flex-direction:column; gap:4px; }
@@ -193,14 +246,23 @@ export default function HeroSection({ onSuggest }) {
           letter-spacing:0.02em; padding:13px 26px; border-radius:999px; cursor:pointer;
           transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, border-color 0.25s ease;
         }
-        .btn-white{ background:#ffffff; color:#0a0a0a; border:none; }
-        .btn-white:hover{ transform:translateY(-2px); box-shadow:0 10px 26px rgba(255,255,255,0.18); }
-        .btn-outline{ background:transparent; color:#ffffff; border:1px solid rgba(255,255,255,0.2); }
+        .btn-white{ background:var(--amber); color:#1a1206; border:none; }
+        .btn-white:hover{ transform:translateY(-2px); box-shadow:0 12px 28px rgba(255,171,94,0.28); }
+        .btn-outline{ background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,0.2); }
         .btn-outline:hover{
           border-color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.05); transform:translateY(-2px);
         }
         .btn-white:focus-visible, .btn-outline:focus-visible{
-          outline:2px solid #7dd3fc; outline-offset:3px;
+          outline:2px solid var(--cyan); outline-offset:3px;
+        }
+
+        .tech-pill-row{
+          display:flex; gap:8px; flex-wrap:wrap;
+        }
+        @media (max-width:520px){
+          .tech-pill-row{ flex-wrap:nowrap; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+          .tech-pill-row::-webkit-scrollbar{ display:none; }
+          .tech-pill-row span{ flex-shrink:0; }
         }
 
         @media (max-width:640px){
@@ -214,10 +276,15 @@ export default function HeroSection({ onSuggest }) {
         }
       `}</style>
 
-      {/* Ambient glow — quiet atmosphere behind the content, not a second signature */}
+      {/* Ambient glow */}
       <div style={{
         position: 'absolute', top: '-10%', right: '-10%', width: '55%', height: '55%',
-        background: 'radial-gradient(circle, rgba(125,211,252,0.08), transparent 70%)',
+        background: 'radial-gradient(circle, rgba(111,214,255,0.07), transparent 70%)',
+        pointerEvents: 'none', zIndex: 0, filter: 'blur(10px)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '-15%', left: '-8%', width: '40%', height: '45%',
+        background: 'radial-gradient(circle, rgba(255,171,94,0.06), transparent 70%)',
         pointerEvents: 'none', zIndex: 0, filter: 'blur(10px)',
       }} />
 
@@ -232,134 +299,148 @@ export default function HeroSection({ onSuggest }) {
 
       <div style={{ width: '100%', maxWidth: '1140px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
-        {/* ── TOP: Location & Status ── */}
-        <motion.div variants={fadeInUp} initial="hidden" animate="visible"
-          style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <MapPin size={12} color="#999999" strokeWidth={1.5} />
-            <span style={{ fontFamily: 'Inter', fontSize: '0.65rem', color: '#888888', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-              Addis Ababa, Ethiopia
-            </span>
-          </div>
-          <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#ffffff', boxShadow: '0 0 12px rgba(255,255,255,0.3)', animation: 'statusBlink 2s ease-in-out infinite' }} />
-            <span style={{ fontFamily: 'Inter', fontSize: '0.65rem', color: '#cccccc', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: '500' }}>
-              Open to Work
-            </span>
-          </div>
-        </motion.div>
+        <div className="hero-grid">
 
-        {/* ── MAIN: copy column + pipeline column ── */}
-        <div className="hero-shell">
-
-          {/* LEFT — identity & copy */}
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible">
-            <motion.div variants={fadeInUp} style={{ marginBottom: '18px' }}>
-              <div style={{
-                fontFamily: 'Outfit', fontWeight: '800',
-                fontSize: 'clamp(2.6rem, 8vw, 4.8rem)',
-                lineHeight: '0.95', letterSpacing: '-0.03em', color: '#ffffff',
-              }}>
-                <span style={{ display: 'block' }} className="glitch-container" data-text="JOHNSON">JOHNSON</span>
-                <span className="gradient-text" style={{ display: 'block' }}>AYALEW</span>
-              </div>
-            </motion.div>
-
-            <motion.div variants={fadeInUp} style={{ marginBottom: '20px', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
-              <div style={{ fontFamily: 'Space Mono', fontSize: 'clamp(0.85rem, 2.6vw, 1.1rem)', color: '#cccccc', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ color: '#666666', marginRight: '4px', opacity: 0.7 }}>&gt;</span>
-                {displayed}
-                <span className="typing-cursor" />
-              </div>
-            </motion.div>
-
-            <motion.p variants={fadeInUp} style={{
-              fontFamily: 'Inter', fontSize: '0.92rem', lineHeight: '1.85', color: '#a8a8a8',
-              maxWidth: '480px', marginBottom: '28px',
-            }}>
-              I build AI-powered automation systems that eliminate hours of manual work —
-              scraping thousands of records, scoring them with LLMs, and pushing results
-              to dashboards, email, or Telegram. Every project ships with real data and zero wasted clicks.
-            </motion.p>
-
-            <motion.div variants={fadeInUp} style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '28px' }}>
-              <button className="btn-white" data-cursor onClick={() => onSuggest?.('Show me your projects')}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                View Projects <ArrowRight size={14} />
-              </button>
-              <button className="btn-outline" data-cursor onClick={() => onSuggest?.('How can I hire you?')}>
-                Hire Me
-              </button>
-            </motion.div>
-
-            <motion.div variants={fadeInUp} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '26px' }}>
-              {TECH_PILLS.map((t, i) => (
-                <span key={t} style={{
-                  padding: '4px 14px', borderRadius: '20px',
-                  background: i < 2 ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: `1px solid ${i < 2 ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.04)'}`,
-                  fontSize: '0.62rem', letterSpacing: '0.06em',
-                  color: i < 2 ? '#cccccc' : '#666666', fontFamily: 'Inter', fontWeight: '500',
-                  transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
-                }}>{t}</span>
-              ))}
-            </motion.div>
-
-            <motion.div variants={fadeInUp} style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
-              {SOCIAL.map(({ label, url, Icon }) => (
-                <a key={label} href={url} target="_blank" rel="noreferrer" data-cursor title={label}
-                  style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', letterSpacing: '0.06em', color: '#777777', textDecoration: 'none', transition: 'all 0.25s', padding: '4px 0' }}
-                  onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.transform = 'translateX(4px)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.color = '#777777'; e.currentTarget.style.transform = 'translateX(0)'; }}
-                >
-                  <Icon size={16} strokeWidth={1.5} />
-                  {label}
-                </a>
-              ))}
-            </motion.div>
+          {/* ── Eyebrow: location & status ── */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-eyebrow"
+            style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <MapPin size={12} color="#999999" strokeWidth={1.5} />
+              <span style={{ fontFamily: 'Inter', fontSize: '0.65rem', color: '#888888', letterSpacing: '0.12em', textTransform: 'uppercase' }}>
+                Addis Ababa, Ethiopia
+              </span>
+            </div>
+            <div style={{ width: '1px', height: '12px', background: 'rgba(255,255,255,0.06)' }} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--ok)', boxShadow: '0 0 12px rgba(126,232,160,0.4)', animation: 'statusBlink 2s ease-in-out infinite' }} />
+              <span style={{ fontFamily: 'Inter', fontSize: '0.65rem', color: '#cccccc', letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: '500' }}>
+                Open to Work
+              </span>
+            </div>
           </motion.div>
 
-          {/* RIGHT — signature pipeline visual */}
-          <motion.div variants={staggerContainer} initial="hidden" animate="visible">
-            <motion.div variants={fadeInUp} style={{
+          {/* ── Headline ── */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-headline" style={{ marginBottom: '10px' }}>
+            <div style={{
+              fontFamily: 'Outfit', fontWeight: '800',
+              fontSize: 'clamp(2.4rem, 9vw, 4.8rem)',
+              lineHeight: '0.95', letterSpacing: '-0.03em', color: 'var(--ink)',
+            }}>
+              <span style={{ display: 'block' }} className="glitch-container" data-text="JOHNSON">JOHNSON</span>
+              <span className="gradient-text" style={{ display: 'block' }}>AYALEW</span>
+            </div>
+          </motion.div>
+
+          {/* ── Command-line role ── */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-cli"
+            style={{ marginBottom: '18px', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ fontFamily: 'Space Mono', fontSize: 'clamp(0.85rem, 2.6vw, 1.1rem)', color: '#cccccc', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ color: 'var(--amber)', marginRight: '4px', opacity: 0.85 }}>&gt;</span>
+              {displayed}
+              <span className="typing-cursor" />
+            </div>
+          </motion.div>
+
+          {/* ── Signature element: live terminal window ── */}
+          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
+            className="area-terminal">
+            <div style={{
               fontSize: '0.55rem', letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#666666', marginBottom: '4px', fontFamily: 'Inter',
+              color: '#666666', marginBottom: '8px', fontFamily: 'Inter',
             }}>
               What every project runs on
-            </motion.div>
-            <div className="glass-card" style={{ borderRadius: '18px', padding: '22px 22px 18px' }}>
-              <div className="pipeline-rail">
-                {PIPELINE.map((p, i) => (
-                  <motion.div key={p.step} variants={cardItem} className="pipeline-node" data-cursor>
-                    <div className="pipeline-node-line" />
-                    <div className="pipeline-dot">{p.step}</div>
-                    <div>
-                      <div style={{ fontFamily: 'Outfit', fontWeight: '700', fontSize: '0.95rem', color: '#ffffff', marginBottom: '3px' }}>
-                        {p.label}
-                      </div>
-                      <div style={{ fontFamily: 'Inter', fontSize: '0.7rem', color: '#888888', lineHeight: '1.5', maxWidth: '230px' }}>
-                        {p.detail}
-                      </div>
-                    </div>
-                  </motion.div>
+            </div>
+            <div className="terminal-window">
+              <div className="terminal-titlebar">
+                <span className="terminal-dot" style={{ background: '#ff5f57' }} />
+                <span className="terminal-dot" style={{ background: '#febc2e' }} />
+                <span className="terminal-dot" style={{ background: '#28c840' }} />
+                <span className="terminal-label">
+                  <Terminal size={11} strokeWidth={1.5} />
+                  automation.log
+                </span>
+              </div>
+              <div className="terminal-body">
+                {LOG_LINES.slice(0, logCount).map((line, i) => (
+                  <div key={i} className="term-line">
+                    {line.type === 'cmd' ? (
+                      <>
+                        <span className="term-prompt">$</span>
+                        <span className="term-cmd">{line.text}</span>
+                      </>
+                    ) : (
+                      <span className={line.type === 'ok' ? 'term-ok' : 'term-out'}>↳ {line.text}</span>
+                    )}
+                  </div>
                 ))}
+                {logCount < LOG_LINES.length && <span className="typing-cursor" style={{ marginLeft: logCount === 0 ? 0 : '18px' }} />}
               </div>
             </div>
+          </motion.div>
 
-            {/* Stat strip beneath — supporting detail, not the headline */}
-            <motion.div variants={fadeInUp} className="hero-stat-strip" style={{ marginTop: '20px', paddingTop: '18px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-              {STATS.map(({ num, label }) => (
-                <div key={label} className="stat-block">
-                  <div style={{ fontFamily: 'Outfit', fontWeight: '800', fontSize: '1.5rem', color: '#ffffff', letterSpacing: '-0.02em' }}>{num}</div>
-                  <div style={{ fontSize: '0.5rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#666666', fontFamily: 'Inter', fontWeight: '500' }}>{label}</div>
-                </div>
-              ))}
-            </motion.div>
+          {/* ── Copy ── */}
+          <motion.p variants={fadeInUp} initial="hidden" animate="visible" className="area-copy" style={{
+            fontFamily: 'Inter', fontSize: '0.92rem', lineHeight: '1.85', color: '#a8a8a8',
+            maxWidth: '480px', marginBottom: '4px',
+          }}>
+            I build AI-powered automation systems that eliminate hours of manual work —
+            scraping thousands of records, scoring them with LLMs, and pushing results
+            to dashboards, email, or Telegram. Every project ships with real data and zero wasted clicks.
+          </motion.p>
+
+          {/* ── Actions, pills, socials ── */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-actions"
+            style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '20px' }}>
+            <button className="btn-white" data-cursor onClick={() => onSuggest?.('Show me your projects')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              View Projects <ArrowRight size={14} />
+            </button>
+            <button className="btn-outline" data-cursor onClick={() => onSuggest?.('How can I hire you?')}>
+              Hire Me
+            </button>
+          </motion.div>
+
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-pills tech-pill-row" style={{ marginTop: '6px' }}>
+            {TECH_PILLS.map((t, i) => (
+              <span key={t} style={{
+                padding: '4px 14px', borderRadius: '20px',
+                background: i < 2 ? 'rgba(255,171,94,0.09)' : 'rgba(255,255,255,0.03)',
+                border: `1px solid ${i < 2 ? 'rgba(255,171,94,0.22)' : 'rgba(255,255,255,0.04)'}`,
+                fontSize: '0.62rem', letterSpacing: '0.06em',
+                color: i < 2 ? 'var(--amber)' : '#666666', fontFamily: 'Inter', fontWeight: '500',
+                whiteSpace: 'nowrap',
+                transition: 'background 0.25s ease, color 0.25s ease, border-color 0.25s ease',
+              }}>{t}</span>
+            ))}
+          </motion.div>
+
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-social"
+            style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
+            {SOCIAL.map(({ label, url, Icon }) => (
+              <a key={label} href={url} target="_blank" rel="noreferrer" data-cursor title={label}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.72rem', letterSpacing: '0.06em', color: '#777777', textDecoration: 'none', transition: 'all 0.25s', padding: '4px 0' }}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--ink)'; e.currentTarget.style.transform = 'translateX(4px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.color = '#777777'; e.currentTarget.style.transform = 'translateX(0)'; }}
+              >
+                <Icon size={16} strokeWidth={1.5} />
+                {label}
+              </a>
+            ))}
+          </motion.div>
+
+          {/* ── Stat strip ── */}
+          <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-stats hero-stat-strip"
+            style={{ paddingTop: '18px', borderTop: '1px solid rgba(255,255,255,0.05)', alignSelf: 'start' }}>
+            {STATS.map(({ num, label }) => (
+              <div key={label} className="stat-block">
+                <div style={{ fontFamily: 'Outfit', fontWeight: '800', fontSize: '1.5rem', color: 'var(--ink)', letterSpacing: '-0.02em' }}>{num}</div>
+                <div style={{ fontSize: '0.5rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: '#666666', fontFamily: 'Inter', fontWeight: '500' }}>{label}</div>
+              </div>
+            ))}
           </motion.div>
         </div>
 
-        {/* ── BOTTOM BAR ── */}
+        {/* ── Bottom bar ── */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
           className="hero-bottom-bar"
           style={{
