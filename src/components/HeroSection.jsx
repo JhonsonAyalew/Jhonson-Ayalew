@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown, Terminal } from 'lucide-react';
+import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer, cardItem } from '../utils/animationVariants.js';
 
 const ROLES = [
@@ -26,23 +26,34 @@ const SOCIAL = [
 
 const TECH_PILLS = ['Python', 'Claude API', 'Flask', 'React', 'PostgreSQL', 'Groq AI', 'ETL', 'BeautifulSoup'];
 
-// The signature element: a live-looking terminal window running his actual
-// production pipeline (scrape -> score -> deliver), because that's the
-// realest, most characteristic artifact in his world — not a decorative card.
-const LOG_LINES = [
-  { type: 'cmd', text: 'scrape --source=web --pages=340' },
-  { type: 'out', text: '1,204 records collected in 6.1s' },
-  { type: 'cmd', text: 'score --model=claude-3.5-sonnet' },
-  { type: 'out', text: '87 leads qualified · 72% match rate' },
-  { type: 'cmd', text: 'deliver --to=sheets,telegram,email' },
-  { type: 'ok', text: 'pipeline complete — 0 errors' },
+// ── Globe geometry (pure CSS 3D wireframe sphere) ──
+const GLOBE_R = 140; // px, half of the 280px inner box
+const MERIDIANS = [0, 30, 60, 90, 120, 150];
+const LATITUDES = [58, 28, -28, -58];
+
+// ── Network overlay (2D nodes + flight-path connections drawn over the sphere) ──
+const HUB = { x: 160, y: 160 };
+const NODES = [
+  { x: 270, y: 90 },
+  { x: 295, y: 190 },
+  { x: 245, y: 270 },
+  { x: 140, y: 285 },
+  { x: 45, y: 210 },
+  { x: 65, y: 95 },
+];
+const CONNECTIONS = [
+  'M160,160 Q230,70 270,90',
+  'M160,160 Q270,120 295,190',
+  'M160,160 Q235,240 245,270',
+  'M160,160 Q180,260 140,285',
+  'M160,160 Q80,225 45,210',
+  'M160,160 Q75,110 65,95',
 ];
 
 export default function HeroSection({ onSuggest }) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [phase, setPhase] = useState('typing');
-  const [logCount, setLogCount] = useState(0);
 
   // Role typewriter (the command line under the name)
   useEffect(() => {
@@ -66,17 +77,6 @@ export default function HeroSection({ onSuggest }) {
     }
     return () => clearTimeout(timeout);
   }, [displayed, phase, roleIndex]);
-
-  // Terminal log — reveals one line at a time, holds, then re-runs the "job"
-  useEffect(() => {
-    let timeout;
-    if (logCount < LOG_LINES.length) {
-      timeout = setTimeout(() => setLogCount(c => c + 1), 620);
-    } else {
-      timeout = setTimeout(() => setLogCount(0), 2600);
-    }
-    return () => clearTimeout(timeout);
-  }, [logCount]);
 
   return (
     <motion.div
@@ -113,10 +113,10 @@ export default function HeroSection({ onSuggest }) {
           row-gap:0;
           grid-template-areas:
             "eyebrow  eyebrow"
-            "headline terminal"
-            "cli      terminal"
-            "copy     terminal"
-            "actions  terminal"
+            "headline globe"
+            "cli      globe"
+            "copy     globe"
+            "actions  globe"
             "pills    stats"
             "social   stats";
         }
@@ -128,7 +128,7 @@ export default function HeroSection({ onSuggest }) {
               "eyebrow"
               "headline"
               "cli"
-              "terminal"
+              "globe"
               "copy"
               "actions"
               "pills"
@@ -139,7 +139,7 @@ export default function HeroSection({ onSuggest }) {
         .area-eyebrow{ grid-area:eyebrow; }
         .area-headline{ grid-area:headline; }
         .area-cli{ grid-area:cli; }
-        .area-terminal{ grid-area:terminal; }
+        .area-globe{ grid-area:globe; }
         .area-copy{ grid-area:copy; }
         .area-actions{ grid-area:actions; }
         .area-pills{ grid-area:pills; }
@@ -193,47 +193,103 @@ export default function HeroSection({ onSuggest }) {
           50%{ opacity:0.4; transform:scale(0.75); }
         }
 
-        /* ── Terminal window: the signature element ── */
-        .terminal-window{
-          background: linear-gradient(180deg, var(--surface) 0%, #0e1013 100%);
-          border:1px solid rgba(255,255,255,0.09);
-          border-radius:14px;
-          overflow:hidden;
+        /* ── Globe: the signature element ── */
+        .globe-visual{
           position:relative;
-          box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02);
+          width:320px;
+          max-width:100%;
+          aspect-ratio:1/1;
+          margin:0 auto;
         }
-        .terminal-window::after{
-          content:'';
-          position:absolute; inset:0; pointer-events:none;
-          background: repeating-linear-gradient(
-            to bottom, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px,
-            transparent 1px, transparent 3px
-          );
-          mix-blend-mode:overlay;
+        .globe-scene{
+          position:absolute; inset:0;
+          perspective:1100px;
         }
-        .terminal-titlebar{
-          display:flex; align-items:center; gap:8px;
-          padding:12px 16px;
-          border-bottom:1px solid rgba(255,255,255,0.06);
-          background:rgba(255,255,255,0.015);
+        .globe-core{
+          position:absolute; inset:20px;
+          border-radius:50%;
+          background:
+            radial-gradient(circle at 32% 28%, rgba(111,214,255,0.32), transparent 45%),
+            radial-gradient(circle at 68% 75%, rgba(255,171,94,0.16), transparent 55%),
+            radial-gradient(circle at 50% 50%, #171a1f, #0a0b0d 78%);
+          box-shadow: 0 0 70px rgba(111,214,255,0.14), inset 0 0 46px rgba(0,0,0,0.65);
         }
-        .terminal-dot{ width:9px; height:9px; border-radius:50%; }
-        .terminal-label{
-          margin-left:6px; font-family:'Space Mono', monospace; font-size:0.62rem;
-          letter-spacing:0.08em; color:var(--muted); display:flex; align-items:center; gap:6px;
+        .globe-wireframe{
+          position:absolute; inset:20px;
+          transform-style:preserve-3d;
+          animation: globeSpin 26s linear infinite;
         }
-        .terminal-body{
-          padding:20px 18px 22px;
+        @keyframes globeSpin{
+          from{ transform:rotateY(0deg); }
+          to{ transform:rotateY(360deg); }
+        }
+        .meridian{
+          position:absolute; inset:0;
+          border-radius:50%;
+          border:1px solid rgba(111,214,255,0.22);
+        }
+        .latitude{
+          position:absolute; left:50%; top:50%;
+          border-radius:50%;
+          border:1px solid rgba(255,171,94,0.16);
+        }
+        .globe-orbits{
+          position:absolute; inset:0;
+          overflow:visible;
+        }
+        .orbit-ring{
+          fill:none;
+          stroke:rgba(255,255,255,0.14);
+          stroke-dasharray:1.5 6;
+        }
+        .flow-line{
+          fill:none;
+          stroke-width:1.3;
+          stroke-dasharray:5 9;
+          opacity:0.6;
+          animation:flowDash 3.2s linear infinite;
+        }
+        @keyframes flowDash{ to{ stroke-dashoffset:-140; } }
+        .node-dot{ fill:var(--cyan); }
+        .node-pulse{
+          fill:none;
+          stroke:var(--cyan);
+          stroke-width:1.4;
+          opacity:0.55;
+          transform-box:fill-box;
+          transform-origin:center;
+          animation:pulseRing 2.6s ease-out infinite;
+        }
+        .hub-dot{ fill:var(--amber); }
+        .hub-pulse{
+          fill:none;
+          stroke:var(--amber);
+          stroke-width:1.6;
+          opacity:0.5;
+          transform-box:fill-box;
+          transform-origin:center;
+          animation:pulseRing 2.2s ease-out infinite;
+        }
+        @keyframes pulseRing{
+          0%{ transform:scale(1); opacity:0.6; }
+          100%{ transform:scale(3.4); opacity:0; }
+        }
+        .globe-caption{
+          text-align:center;
           font-family:'Space Mono', monospace;
-          font-size:0.78rem;
-          line-height:1.9;
-          min-height:196px;
+          font-size:0.6rem;
+          letter-spacing:0.14em;
+          text-transform:uppercase;
+          color:#666666;
+          margin-top:14px;
         }
-        .term-line{ display:flex; gap:8px; align-items:baseline; }
-        .term-prompt{ color:var(--amber); flex-shrink:0; }
-        .term-cmd{ color:var(--ink); }
-        .term-out{ color:var(--muted); padding-left:18px; }
-        .term-ok{ color:var(--ok); padding-left:18px; }
+        .globe-caption b{ color:var(--amber); font-weight:600; }
+
+        @media (prefers-reduced-motion: reduce){
+          .globe-wireframe{ animation:none; }
+          .node-pulse, .hub-pulse{ animation:none; }
+          .flow-line{ animation:none; stroke-dasharray:none; }
+        }
 
         .hero-stat-strip{ display:flex; justify-content:space-between; gap:10px; }
         .stat-block{ display:flex; flex-direction:column; gap:4px; }
@@ -341,40 +397,100 @@ export default function HeroSection({ onSuggest }) {
             </div>
           </motion.div>
 
-          {/* ── Signature element: live terminal window ── */}
+          {/* ── Signature element: rotating 3D globe with connected nodes ── */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
-            className="area-terminal">
+            className="area-globe">
             <div style={{
               fontSize: '0.55rem', letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#666666', marginBottom: '8px', fontFamily: 'Inter',
+              color: '#666666', marginBottom: '12px', fontFamily: 'Inter', textAlign: 'center',
             }}>
-              What every project runs on
+              Automations running across the globe
             </div>
-            <div className="terminal-window">
-              <div className="terminal-titlebar">
-                <span className="terminal-dot" style={{ background: '#ff5f57' }} />
-                <span className="terminal-dot" style={{ background: '#febc2e' }} />
-                <span className="terminal-dot" style={{ background: '#28c840' }} />
-                <span className="terminal-label">
-                  <Terminal size={11} strokeWidth={1.5} />
-                  automation.log
-                </span>
+
+            <div className="globe-visual">
+              <div className="globe-scene">
+                <div className="globe-core" />
+                <div className="globe-wireframe">
+                  {MERIDIANS.map(angle => (
+                    <div key={angle} className="meridian" style={{ transform: `rotateY(${angle}deg)` }} />
+                  ))}
+                  {LATITUDES.map(lat => {
+                    const rad = (lat * Math.PI) / 180;
+                    const ringR = GLOBE_R * Math.cos(rad);
+                    const offset = GLOBE_R * Math.sin(rad);
+                    return (
+                      <div
+                        key={lat}
+                        className="latitude"
+                        style={{
+                          width: ringR * 2,
+                          height: ringR * 2,
+                          marginLeft: -ringR,
+                          marginTop: -ringR,
+                          transform: `rotateX(90deg) translateZ(${offset}px)`,
+                        }}
+                      />
+                    );
+                  })}
+                </div>
               </div>
-              <div className="terminal-body">
-                {LOG_LINES.slice(0, logCount).map((line, i) => (
-                  <div key={i} className="term-line">
-                    {line.type === 'cmd' ? (
-                      <>
-                        <span className="term-prompt">$</span>
-                        <span className="term-cmd">{line.text}</span>
-                      </>
-                    ) : (
-                      <span className={line.type === 'ok' ? 'term-ok' : 'term-out'}>↳ {line.text}</span>
-                    )}
-                  </div>
+
+              <svg className="globe-orbits" viewBox="0 0 320 320">
+                <defs>
+                  <linearGradient id="lineGradient" x1="0" y1="0" x2="320" y2="320" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#ffab5e" />
+                    <stop offset="100%" stopColor="#6fd6ff" />
+                  </linearGradient>
+                  <filter id="nodeglow" x="-120%" y="-120%" width="340%" height="340%">
+                    <feGaussianBlur stdDeviation="2.4" result="blur" />
+                    <feMerge>
+                      <feMergeNode in="blur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                </defs>
+
+                {/* tilted orbit rings with traveling satellites */}
+                <path id="orbitA" className="orbit-ring" d="M28,208 A140,50 -20 1,1 292,112 A140,50 -20 1,1 28,208" />
+                <path id="orbitB" className="orbit-ring" d="M65,105 A110,40 30 1,1 255,215 A110,40 30 1,1 65,105" />
+                <circle r="3" fill="var(--amber)" filter="url(#nodeglow)">
+                  <animateMotion dur="11s" repeatCount="indefinite">
+                    <mpath href="#orbitA" />
+                  </animateMotion>
+                </circle>
+                <circle r="2.6" fill="var(--cyan)" filter="url(#nodeglow)">
+                  <animateMotion dur="14s" begin="-5s" repeatCount="indefinite">
+                    <mpath href="#orbitB" />
+                  </animateMotion>
+                </circle>
+
+                {/* flight-path connections from the hub to each node */}
+                {CONNECTIONS.map((d, i) => (
+                  <path
+                    key={i}
+                    d={d}
+                    className="flow-line"
+                    stroke="url(#lineGradient)"
+                    style={{ animationDelay: `${i * 0.45}s` }}
+                  />
                 ))}
-                {logCount < LOG_LINES.length && <span className="typing-cursor" style={{ marginLeft: logCount === 0 ? 0 : '18px' }} />}
-              </div>
+
+                {/* outer data nodes */}
+                {NODES.map((n, i) => (
+                  <g key={i}>
+                    <circle cx={n.x} cy={n.y} r="4" className="node-pulse" style={{ animationDelay: `${i * 0.35}s` }} />
+                    <circle cx={n.x} cy={n.y} r="3" className="node-dot" filter="url(#nodeglow)" />
+                  </g>
+                ))}
+
+                {/* central hub — Johnson's pipeline, converging every source */}
+                <circle cx={HUB.x} cy={HUB.y} r="6" className="hub-pulse" />
+                <circle cx={HUB.x} cy={HUB.y} r="5" className="hub-dot" filter="url(#nodeglow)" />
+              </svg>
+            </div>
+
+            <div className="globe-caption">
+              <b>6</b> live sources → <b>1</b> automated pipeline
             </div>
           </motion.div>
 
