@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown, X } from 'lucide-react';
+import { Github, Linkedin, Globe, MapPin, ArrowRight, ArrowDown } from 'lucide-react';
 import { pageTransition, fadeInUp, staggerContainer, cardItem } from '../utils/animationVariants.js';
 
 const ROLES = [
@@ -14,7 +14,7 @@ const ROLES = [
 const STATS = [
   { num: '5+', label: 'Live Projects' },
   { num: '2yr', label: 'Experience' },
-  { num: '12+', label: 'Tech Stack' },
+  { num: '16', label: 'Tools In Orbit' },
   { num: '3.68', label: 'CGPA' },
 ];
 
@@ -26,52 +26,64 @@ const SOCIAL = [
 
 const TECH_PILLS = ['Python', 'Claude API', 'Flask', 'React', 'PostgreSQL', 'Groq AI', 'ETL', 'BeautifulSoup'];
 
-// ── Enhanced Node Data with technologies ──
-const NODE_DATA = [
-  { id: 'python', label: 'Python Core', tech: 'Python 3.11+', icon: '🐍', x: 270, y: 90, color: '#3776AB' },
-  { id: 'claude', label: 'Claude API', tech: 'LLM Integration', icon: '🧠', x: 295, y: 190, color: '#8B5CF6' },
-  { id: 'flask', label: 'Flask API', tech: 'RESTful Services', icon: '🌶️', x: 245, y: 270, color: '#000000' },
-  { id: 'react', label: 'React Frontend', tech: 'Interactive UI', icon: '⚛️', x: 140, y: 285, color: '#61DAFB' },
-  { id: 'postgres', label: 'PostgreSQL', tech: 'Data Storage', icon: '🐘', x: 45, y: 210, color: '#336791' },
-  { id: 'groq', label: 'Groq AI', tech: 'Fast LLM Inference', icon: '⚡', x: 65, y: 95, color: '#FF6B6B' },
-  { id: 'beautifulsoup', label: 'BeautifulSoup', tech: 'Web Scraping', icon: '🕸️', x: 190, y: 135, color: '#4CAF50' },
-  { id: 'pandas', label: 'Pandas', tech: 'Data Analysis', icon: '📊', x: 220, y: 210, color: '#150458' },
-  { id: 'docker', label: 'Docker', tech: 'Containerization', icon: '🐳', x: 100, y: 155, color: '#2496ED' },
+// ── Static CSS wireframe sphere (real 3D preserve-3d geometry) ──
+const GLOBE_R = 140; // px, half of the 280px inner box
+const MERIDIANS = [0, 30, 60, 90, 120, 150];
+const LATITUDES = [58, 28, -28, -58];
+
+// ── The signature element: a true 3D sphere of tool nodes, hand-projected each frame ──
+// Every node is a real point on a sphere (x, y, z). We rotate that point in 3D space
+// every animation frame and project it to the screen ourselves — depth (scale + opacity
+// + stacking order) falls straight out of the math, not a canned CSS animation.
+const TOOLS = [
+  { name: 'Python', blurb: 'The core language behind every automation & scraper I ship.' },
+  { name: 'Claude API', blurb: 'LLM reasoning that scores, tags, and summarizes scraped data.' },
+  { name: 'Groq AI', blurb: 'Near-instant inference for pipelines that can\u2019t wait around.' },
+  { name: 'Flask', blurb: 'Lightweight backends that sit behind my dashboards & bots.' },
+  { name: 'FastAPI', blurb: 'Async APIs for services that move a lot of data, fast.' },
+  { name: 'React', blurb: 'The dashboards clients actually open every morning.' },
+  { name: 'PostgreSQL', blurb: 'Structured, query-ready storage for everything scraped.' },
+  { name: 'MongoDB', blurb: 'Flexible storage when the data shape keeps changing.' },
+  { name: 'BeautifulSoup', blurb: 'Parsing raw HTML into clean, usable records.' },
+  { name: 'Selenium', blurb: 'Driving real browsers through sites that fight scraping.' },
+  { name: 'Docker', blurb: 'Every pipeline packaged so it runs the same everywhere.' },
+  { name: 'n8n', blurb: 'Visual orchestration for the glue between tools.' },
+  { name: 'Telegram API', blurb: 'Pushing finished results straight to a phone.' },
+  { name: 'Pandas', blurb: 'Cleaning and reshaping data before it hits a chart.' },
+  { name: 'REST APIs', blurb: 'The contracts that let all these tools talk to each other.' },
+  { name: 'Node.js', blurb: 'A second runtime for the JS side of the stack.' },
 ];
 
-const CONNECTIONS = [
-  { from: 'python', to: 'claude' },
-  { from: 'python', to: 'flask' },
-  { from: 'python', to: 'react' },
-  { from: 'python', to: 'postgres' },
-  { from: 'python', to: 'groq' },
-  { from: 'python', to: 'beautifulsoup' },
-  { from: 'python', to: 'pandas' },
-  { from: 'python', to: 'docker' },
-  { from: 'claude', to: 'flask' },
-  { from: 'claude', to: 'groq' },
-  { from: 'flask', to: 'react' },
-  { from: 'flask', to: 'postgres' },
-  { from: 'flask', to: 'docker' },
-  { from: 'react', to: 'postgres' },
-  { from: 'react', to: 'docker' },
-  { from: 'postgres', to: 'pandas' },
-  { from: 'beautifulsoup', to: 'pandas' },
-  { from: 'pandas', to: 'postgres' },
-  { from: 'groq', to: 'claude' },
-  { from: 'docker', to: 'postgres' },
-];
+const NODE_RADIUS = 148; // orbit radius, px — sits just outside the shaded globe core
+const FOCAL_LENGTH = 460; // perspective distance for the manual 3D projection
+const AXIAL_TILT = -0.32; // radians, fixed tilt so the sphere reads as a globe, not a wheel
+
+function buildSphere(count, radius) {
+  // Fibonacci sphere: distributes N points evenly across a sphere's surface
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  const points = [];
+  for (let i = 0; i < count; i++) {
+    const yUnit = 1 - (i / (count - 1)) * 2;
+    const ringR = Math.sqrt(Math.max(0, 1 - yUnit * yUnit));
+    const theta = goldenAngle * i;
+    points.push({
+      x: Math.cos(theta) * ringR * radius,
+      y: yUnit * radius,
+      z: Math.sin(theta) * ringR * radius,
+    });
+  }
+  return points;
+}
+
+const NODE_POSITIONS = buildSphere(TOOLS.length, NODE_RADIUS);
 
 export default function HeroSection({ onSuggest }) {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayed, setDisplayed] = useState('');
   const [phase, setPhase] = useState('typing');
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [tooltip, setTooltip] = useState({ visible: false, x: 0, y: 0, data: null });
-  const [globeRotation, setGlobeRotation] = useState(0);
-  const globeRef = useRef(null);
+  const [selectedTool, setSelectedTool] = useState(null);
 
-  // Role typewriter effect
+  // Role typewriter (the command line under the name)
   useEffect(() => {
     const target = ROLES[roleIndex];
     let timeout;
@@ -94,38 +106,85 @@ export default function HeroSection({ onSuggest }) {
     return () => clearTimeout(timeout);
   }, [displayed, phase, roleIndex]);
 
-  // Auto-rotate globe
+  // ── Real 3D rotation engine for the tool sphere ──
+  const wireframeRef = useRef(null);
+  const nodeRefs = useRef([]);
+  const linkRefs = useRef([]);
+  const angleRef = useRef(0.6);
+  const draggingRef = useRef(false);
+  const lastXRef = useRef(0);
+  const rafRef = useRef(null);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGlobeRotation(prev => (prev + 0.3) % 360);
-    }, 50);
-    return () => clearInterval(interval);
+    const prefersReduced = typeof window !== 'undefined' &&
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const cx = 160, cy = 160;
+    const cosTilt = Math.cos(AXIAL_TILT), sinTilt = Math.sin(AXIAL_TILT);
+
+    function frame() {
+      const angle = angleRef.current;
+      const cosA = Math.cos(angle), sinA = Math.sin(angle);
+
+      if (wireframeRef.current) {
+        wireframeRef.current.style.transform =
+          `rotateX(${(AXIAL_TILT * 180) / Math.PI}deg) rotateY(${(angle * 180) / Math.PI}deg)`;
+      }
+
+      NODE_POSITIONS.forEach((p, i) => {
+        // rotate around the vertical (spin) axis
+        const x1 = p.x * cosA + p.z * sinA;
+        const z1 = -p.x * sinA + p.z * cosA;
+        const y1 = p.y;
+        // apply the fixed axial tilt (rotate around the horizontal axis)
+        const y2 = y1 * cosTilt - z1 * sinTilt;
+        const z2 = y1 * sinTilt + z1 * cosTilt;
+
+        const persp = FOCAL_LENGTH / (FOCAL_LENGTH + z2);
+        const sx = cx + x1 * persp;
+        const sy = cy + y2 * persp;
+        const depth = (z2 + NODE_RADIUS) / (2 * NODE_RADIUS); // 0 = far side, 1 = near side
+
+        const node = nodeRefs.current[i];
+        if (node) {
+          node.style.left = `${sx}px`;
+          node.style.top = `${sy}px`;
+          node.style.transform = `translate(-50%, -50%) scale(${0.55 + depth * 0.65})`;
+          node.style.opacity = 0.32 + depth * 0.68;
+          node.style.zIndex = Math.round(depth * 1000) + 1;
+        }
+        const link = linkRefs.current[i];
+        if (link) {
+          link.setAttribute('x1', cx);
+          link.setAttribute('y1', cy);
+          link.setAttribute('x2', sx);
+          link.setAttribute('y2', sy);
+          link.style.opacity = 0.12 + depth * 0.46;
+        }
+      });
+
+      if (!draggingRef.current && !prefersReduced) {
+        angleRef.current += 0.0022;
+      }
+      rafRef.current = requestAnimationFrame(frame);
+    }
+
+    rafRef.current = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(rafRef.current);
   }, []);
 
-  const handleNodeClick = (node, event) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setSelectedNode(node);
-    setTooltip({
-      visible: true,
-      x: rect.left + rect.width / 2,
-      y: rect.top - 80,
-      data: node
-    });
-    setTimeout(() => setTooltip(prev => ({ ...prev, visible: false })), 3000);
+  const handlePointerDown = (e) => {
+    draggingRef.current = true;
+    lastXRef.current = e.clientX;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-
-  const getConnectionPath = (from, to) => {
-    const fromNode = NODE_DATA.find(n => n.id === from);
-    const toNode = NODE_DATA.find(n => n.id === to);
-    if (!fromNode || !toNode) return '';
-    const dx = toNode.x - fromNode.x;
-    const dy = toNode.y - fromNode.y;
-    const midX = (fromNode.x + toNode.x) / 2;
-    const midY = (fromNode.y + toNode.y) / 2;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const curve = dist * 0.4;
-    return `M${fromNode.x},${fromNode.y} Q${midX + (dy / dist) * curve},${midY - (dx / dist) * curve} ${toNode.x},${toNode.y}`;
+  const handlePointerMove = (e) => {
+    if (!draggingRef.current) return;
+    const dx = e.clientX - lastXRef.current;
+    angleRef.current += dx * 0.0065;
+    lastXRef.current = e.clientX;
   };
+  const stopDragging = () => { draggingRef.current = false; };
 
   return (
     <motion.div
@@ -142,7 +201,6 @@ export default function HeroSection({ onSuggest }) {
         position: 'relative',
         overflow: 'hidden',
         background: '#0a0b0d',
-        minHeight: '100vh',
       }}
     >
       <style>{`
@@ -243,189 +301,116 @@ export default function HeroSection({ onSuggest }) {
           50%{ opacity:0.4; transform:scale(0.75); }
         }
 
-        /* ── Enhanced Globe ── */
+        /* ── Globe: the signature element — a hand-rotated 3D sphere of tool nodes ── */
+        .globe-eyebrow{
+          font-size:0.55rem; letter-spacing:0.24em; text-transform:uppercase;
+          color:#666666; margin-bottom:12px; font-family:'Inter', sans-serif; text-align:center;
+        }
+        .globe-eyebrow b{ color:var(--cyan); font-weight:600; }
         .globe-visual{
           position:relative;
-          width:340px;
+          width:320px;
           max-width:100%;
           aspect-ratio:1/1;
           margin:0 auto;
-          cursor: grab;
+          cursor:grab;
+          touch-action:none;
         }
-        .globe-visual:active{ cursor: grabbing; }
-
+        .globe-visual:active{ cursor:grabbing; }
         .globe-scene{
           position:absolute; inset:0;
-          perspective:1200px;
+          perspective:1100px;
         }
-
         .globe-core{
           position:absolute; inset:20px;
           border-radius:50%;
           background:
-            radial-gradient(circle at 30% 25%, rgba(111,214,255,0.35), transparent 50%),
-            radial-gradient(circle at 70% 80%, rgba(255,171,94,0.25), transparent 55%),
-            radial-gradient(circle at 50% 50%, #1a1d24, #0a0b0d 82%);
-          box-shadow: 
-            0 0 100px rgba(111,214,255,0.12),
-            0 0 60px rgba(255,171,94,0.08),
-            inset 0 0 60px rgba(0,0,0,0.8),
-            0 0 40px rgba(111,214,255,0.05);
+            radial-gradient(circle at 32% 28%, rgba(111,214,255,0.32), transparent 45%),
+            radial-gradient(circle at 68% 75%, rgba(255,171,94,0.16), transparent 55%),
+            radial-gradient(circle at 50% 50%, #171a1f, #0a0b0d 78%);
+          box-shadow: 0 0 70px rgba(111,214,255,0.14), inset 0 0 46px rgba(0,0,0,0.65);
         }
-
         .globe-wireframe{
           position:absolute; inset:20px;
           transform-style:preserve-3d;
-          animation: globeSpin 30s linear infinite;
         }
-        @keyframes globeSpin{
-          from{ transform:rotateY(0deg); }
-          to{ transform:rotateY(360deg); }
-        }
-
         .meridian{
           position:absolute; inset:0;
           border-radius:50%;
-          border:1.5px solid rgba(111,214,255,0.15);
-          box-shadow: inset 0 0 20px rgba(111,214,255,0.02);
+          border:1px solid rgba(111,214,255,0.2);
         }
-
         .latitude{
           position:absolute; left:50%; top:50%;
           border-radius:50%;
-          border:1.5px solid rgba(255,171,94,0.08);
-          box-shadow: inset 0 0 20px rgba(255,171,94,0.02);
+          border:1px solid rgba(255,171,94,0.14);
         }
-
-        .globe-orbits{
-          position:absolute; inset:0;
-          overflow:visible;
+        .globe-links{
+          position:absolute; inset:0; overflow:visible; pointer-events:none;
         }
-
-        .orbit-ring{
+        .tool-link{ stroke-width:1; }
+        .hub-dot{ fill:var(--amber); }
+        .hub-pulse{
           fill:none;
-          stroke:rgba(255,255,255,0.06);
-          stroke-width:1.5;
-          stroke-dasharray:3 8;
-        }
-
-        .flow-line{
-          fill:none;
-          stroke-width:2;
-          stroke-dasharray:6 10;
-          opacity:0.3;
-          animation:flowDash 3s linear infinite;
-          filter: drop-shadow(0 0 6px rgba(111,214,255,0.1));
-        }
-        @keyframes flowDash{ to{ stroke-dashoffset:-160; } }
-
-        .node-dot{
-          cursor: pointer;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .node-dot:hover{
-          transform: scale(1.8);
-          filter: drop-shadow(0 0 20px currentColor);
-        }
-        .node-dot:active{
-          transform: scale(0.8);
-        }
-
-        .node-pulse{
-          fill:none;
-          stroke-width:2;
+          stroke:var(--amber);
+          stroke-width:1.6;
           opacity:0.5;
           transform-box:fill-box;
           transform-origin:center;
-          animation:pulseRing 2.4s ease-out infinite;
+          animation:pulseRing 2.2s ease-out infinite;
         }
         @keyframes pulseRing{
           0%{ transform:scale(1); opacity:0.6; }
-          100%{ transform:scale(3.6); opacity:0; }
+          100%{ transform:scale(3.4); opacity:0; }
         }
 
-        .hub-dot{
-          cursor: pointer;
-          transition: all 0.3s ease;
+        .tool-node{
+          all:unset;
+          position:absolute;
+          font-family:'Space Mono', monospace;
+          font-size:0.62rem;
+          letter-spacing:0.02em;
+          white-space:nowrap;
+          padding:5px 12px;
+          border-radius:20px;
+          background:rgba(19,21,25,0.88);
+          border:1px solid rgba(111,214,255,0.35);
+          color:#dcecf4;
+          cursor:pointer;
+          will-change:transform, opacity, left, top;
+          transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
         }
-        .hub-dot:hover{
-          transform: scale(1.3);
-          filter: drop-shadow(0 0 30px rgba(255,171,94,0.6));
+        .tool-node:nth-child(odd){ border-color:rgba(255,171,94,0.32); }
+        .tool-node:hover{
+          border-color:var(--cyan); color:var(--cyan); background:rgba(111,214,255,0.12);
         }
-
-        .hub-pulse{
-          fill:none;
-          stroke-width:2.5;
-          opacity:0.4;
-          transform-box:fill-box;
-          transform-origin:center;
-          animation:pulseRing 2s ease-out infinite;
+        .tool-node.is-selected{
+          border-color:var(--amber); color:#1a1206; background:var(--amber);
+          box-shadow:0 0 18px rgba(255,171,94,0.45);
         }
-
-        /* ── Tooltip ── */
-        .tooltip-container{
-          position: fixed;
-          pointer-events: none;
-          z-index: 1000;
-          transform: translate(-50%, -100%);
-          animation: tooltipFade 0.3s ease;
-        }
-        @keyframes tooltipFade{
-          from{ opacity:0; transform: translate(-50%, -90%) scale(0.95); }
-          to{ opacity:1; transform: translate(-50%, -100%) scale(1); }
-        }
-
-        .tooltip-content{
-          background: rgba(19, 21, 25, 0.95);
-          backdrop-filter: blur(12px);
-          border: 1px solid rgba(255,255,255,0.1);
-          border-radius: 12px;
-          padding: 14px 20px;
-          min-width: 160px;
-          box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(111,214,255,0.05);
-        }
-        .tooltip-content .icon{ font-size: 24px; }
-        .tooltip-content .label{ 
-          font-family: 'Inter', sans-serif;
-          font-weight: 600;
-          font-size: 0.85rem;
-          color: var(--ink);
-          margin: 4px 0 2px;
-        }
-        .tooltip-content .tech{
-          font-family: 'Space Mono', monospace;
-          font-size: 0.6rem;
-          color: var(--muted);
-          letter-spacing: 0.04em;
-        }
-        .tooltip-arrow{
-          position: absolute;
-          bottom: -8px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 12px;
-          height: 12px;
-          background: rgba(19, 21, 25, 0.95);
-          border-right: 1px solid rgba(255,255,255,0.1);
-          border-bottom: 1px solid rgba(255,255,255,0.1);
-          transform: translateX(-50%) rotate(45deg);
-        }
+        .tool-node:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
 
         .globe-caption{
           text-align:center;
           font-family:'Space Mono', monospace;
-          font-size:0.55rem;
-          letter-spacing:0.14em;
-          text-transform:uppercase;
-          color:#666666;
-          margin-top:14px;
+          font-size:0.62rem;
+          line-height:1.6;
+          letter-spacing:0.02em;
+          color:#8a8a8a;
+          margin-top:16px;
+          min-height:2.6em;
+          padding:0 6px;
         }
-        .globe-caption b{ color:var(--amber); font-weight:600; }
+        .globe-caption b{ color:var(--amber); font-weight:600; letter-spacing:0.08em; text-transform:uppercase; }
+        .globe-ask{
+          all:unset; display:inline-flex; align-items:center; gap:4px; cursor:pointer;
+          margin-top:6px; font-family:'Inter', sans-serif; font-size:0.62rem;
+          letter-spacing:0.08em; text-transform:uppercase; color:var(--cyan);
+          transition: color 0.2s ease;
+        }
+        .globe-ask:hover{ color:var(--amber); }
 
         @media (prefers-reduced-motion: reduce){
-          .globe-wireframe{ animation:none; }
-          .node-pulse, .hub-pulse{ animation:none; }
-          .flow-line{ animation:none; stroke-dasharray:none; }
+          .tool-node{ transition:none; }
         }
 
         .hero-stat-strip{ display:flex; justify-content:space-between; gap:10px; }
@@ -444,6 +429,9 @@ export default function HeroSection({ onSuggest }) {
         .btn-outline{ background:transparent; color:var(--ink); border:1px solid rgba(255,255,255,0.2); }
         .btn-outline:hover{
           border-color:rgba(255,255,255,0.55); background:rgba(255,255,255,0.05); transform:translateY(-2px);
+        }
+        .btn-white:focus-visible, .btn-outline:focus-visible{
+          outline:2px solid var(--cyan); outline-offset:3px;
         }
 
         .tech-pill-row{
@@ -478,7 +466,9 @@ export default function HeroSection({ onSuggest }) {
         pointerEvents: 'none', zIndex: 0, filter: 'blur(10px)',
       }} />
 
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
+      {/* Decorative grid */}
+      <div style={{
+        position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 0,
         backgroundImage: 'linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)',
         backgroundSize: '60px 60px',
         maskImage: 'radial-gradient(ellipse 80% 60% at 50% 20%, black, transparent 90%)',
@@ -489,7 +479,7 @@ export default function HeroSection({ onSuggest }) {
 
         <div className="hero-grid">
 
-          {/* ── Eyebrow ── */}
+          {/* ── Eyebrow: location & status ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-eyebrow"
             style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -519,7 +509,7 @@ export default function HeroSection({ onSuggest }) {
             </div>
           </motion.div>
 
-          {/* ── CLI ── */}
+          {/* ── Command-line role ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-cli"
             style={{ marginBottom: '18px', minHeight: '32px', display: 'flex', alignItems: 'center' }}>
             <div style={{ fontFamily: 'Space Mono', fontSize: 'clamp(0.85rem, 2.6vw, 1.1rem)', color: '#cccccc', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -529,27 +519,28 @@ export default function HeroSection({ onSuggest }) {
             </div>
           </motion.div>
 
-          {/* ── Enhanced 3D Globe ── */}
+          {/* ── Signature element: a real 3D sphere of tool nodes, orbiting a central pipeline ── */}
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.3 }}
             className="area-globe">
-            <div style={{
-              fontSize: '0.55rem', letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#666666', marginBottom: '12px', fontFamily: 'Inter', textAlign: 'center',
-            }}>
-              ⚡ 9 Technologies Connected
-            </div>
+            <div className="globe-eyebrow">The stack, <b>in orbit</b></div>
 
-            <div className="globe-visual" ref={globeRef}>
+            <div
+              className="globe-visual"
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={stopDragging}
+              onPointerCancel={stopDragging}
+            >
               <div className="globe-scene">
                 <div className="globe-core" />
-                <div className="globe-wireframe" style={{ transform: `rotateY(${globeRotation}deg)` }}>
-                  {[0, 30, 60, 90, 120, 150].map(angle => (
+                <div className="globe-wireframe" ref={wireframeRef}>
+                  {MERIDIANS.map(angle => (
                     <div key={angle} className="meridian" style={{ transform: `rotateY(${angle}deg)` }} />
                   ))}
-                  {[58, 28, -28, -58].map(lat => {
+                  {LATITUDES.map(lat => {
                     const rad = (lat * Math.PI) / 180;
-                    const ringR = 140 * Math.cos(rad);
-                    const offset = 140 * Math.sin(rad);
+                    const ringR = GLOBE_R * Math.cos(rad);
+                    const offset = GLOBE_R * Math.sin(rad);
                     return (
                       <div
                         key={lat}
@@ -567,25 +558,14 @@ export default function HeroSection({ onSuggest }) {
                 </div>
               </div>
 
-              <svg className="globe-orbits" viewBox="0 0 340 340">
+              <svg className="globe-links" viewBox="0 0 320 320">
                 <defs>
-                  <linearGradient id="lineGradient" x1="0" y1="0" x2="340" y2="340" gradientUnits="userSpaceOnUse">
+                  <linearGradient id="lineGradient" x1="0" y1="0" x2="320" y2="320" gradientUnits="userSpaceOnUse">
                     <stop offset="0%" stopColor="#ffab5e" />
                     <stop offset="100%" stopColor="#6fd6ff" />
                   </linearGradient>
-                  <linearGradient id="hubGradient" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#ffab5e" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#ff6b35" stopOpacity="0.8" />
-                  </linearGradient>
-                  <filter id="nodeglow" x="-150%" y="-150%" width="400%" height="400%">
-                    <feGaussianBlur stdDeviation="3" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                  <filter id="hubglow" x="-200%" y="-200%" width="500%" height="500%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
+                  <filter id="nodeglow" x="-120%" y="-120%" width="340%" height="340%">
+                    <feGaussianBlur stdDeviation="2.4" result="blur" />
                     <feMerge>
                       <feMergeNode in="blur" />
                       <feMergeNode in="SourceGraphic" />
@@ -593,120 +573,51 @@ export default function HeroSection({ onSuggest }) {
                   </filter>
                 </defs>
 
-                {/* Orbit rings with satellites */}
-                <path id="orbitA" className="orbit-ring" d="M30,210 A150,55 -20 1,1 310,130 A150,55 -20 1,1 30,210" />
-                <path id="orbitB" className="orbit-ring" d="M70,110 A120,45 30 1,1 270,230 A120,45 30 1,1 70,110" />
-                <circle r="3.5" fill="#ffab5e" filter="url(#nodeglow)">
-                  <animateMotion dur="12s" repeatCount="indefinite">
-                    <mpath href="#orbitA" />
-                  </animateMotion>
-                </circle>
-                <circle r="3" fill="#6fd6ff" filter="url(#nodeglow)">
-                  <animateMotion dur="15s" begin="-6s" repeatCount="indefinite">
-                    <mpath href="#orbitB" />
-                  </animateMotion>
-                </circle>
+                {TOOLS.map((t, i) => (
+                  <line
+                    key={t.name}
+                    ref={el => (linkRefs.current[i] = el)}
+                    className="tool-link"
+                    stroke="url(#lineGradient)"
+                  />
+                ))}
 
-                {/* Connection lines with flowing data */}
-                {CONNECTIONS.map((conn, i) => {
-                  const path = getConnectionPath(conn.from, conn.to);
-                  const fromNode = NODE_DATA.find(n => n.id === conn.from);
-                  const toNode = NODE_DATA.find(n => n.id === conn.to);
-                  if (!fromNode || !toNode) return null;
-                  return (
-                    <path
-                      key={i}
-                      d={path}
-                      className="flow-line"
-                      stroke={fromNode.color || '#6fd6ff'}
-                      style={{ 
-                        animationDelay: `${i * 0.2}s`,
-                        opacity: 0.25 + (i / CONNECTIONS.length) * 0.25
-                      }}
-                    />
-                  );
-                })}
-
-                {/* Enhanced Nodes with click handlers */}
-                {NODE_DATA.map((node, i) => {
-                  const isHub = node.id === 'python';
-                  const radius = isHub ? 8 : 5;
-                  return (
-                    <g key={node.id}>
-                      <circle 
-                        cx={node.x} 
-                        cy={node.y} 
-                        r={isHub ? 14 : 10}
-                        className="node-pulse" 
-                        style={{ 
-                          animationDelay: `${i * 0.25}s`,
-                          stroke: isHub ? '#ffab5e' : node.color,
-                        }} 
-                      />
-                      <circle 
-                        cx={node.x} 
-                        cy={node.y} 
-                        r={radius}
-                        className={isHub ? 'hub-dot' : 'node-dot'}
-                        fill={isHub ? 'url(#hubGradient)' : node.color}
-                        filter="url(#nodeglow)"
-                        style={{ 
-                          cursor: 'pointer',
-                          transition: 'all 0.3s ease',
-                        }}
-                        onClick={(e) => handleNodeClick(node, e)}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'scale(1.5)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.transform = 'scale(1)';
-                        }}
-                      />
-                      <text
-                        x={node.x}
-                        y={node.y + (isHub ? 22 : 18)}
-                        textAnchor="middle"
-                        fontSize={isHub ? 8 : 6}
-                        fill={isHub ? '#ffab5e' : '#888888'}
-                        fontFamily="'Inter', sans-serif"
-                        fontWeight={isHub ? 700 : 400}
-                        letterSpacing="0.04em"
-                        style={{ pointerEvents: 'none' }}
-                      >
-                        {isHub ? 'PYTHON HUB' : node.label.split(' ')[0].toUpperCase()}
-                      </text>
-                    </g>
-                  );
-                })}
+                {/* central hub — Johnson's pipeline, converging every tool */}
+                <circle cx="160" cy="160" r="7" className="hub-pulse" />
+                <circle cx="160" cy="160" r="5" className="hub-dot" filter="url(#nodeglow)" />
               </svg>
+
+              {TOOLS.map((tool, i) => (
+                <button
+                  key={tool.name}
+                  ref={el => (nodeRefs.current[i] = el)}
+                  type="button"
+                  className={`tool-node${selectedTool?.name === tool.name ? ' is-selected' : ''}`}
+                  onClick={() => setSelectedTool(tool)}
+                  aria-label={`${tool.name}: ${tool.blurb}`}
+                >
+                  {tool.name}
+                </button>
+              ))}
             </div>
 
-            {/* Tooltip */}
-            {tooltip.visible && tooltip.data && (
-              <div 
-                className="tooltip-container"
-                style={{ left: tooltip.x, top: tooltip.y }}
-              >
-                <div className="tooltip-content">
-                  <div className="icon">{tooltip.data.icon}</div>
-                  <div className="label">{tooltip.data.label}</div>
-                  <div className="tech">{tooltip.data.tech}</div>
-                  <div style={{ 
-                    fontSize: '0.5rem', 
-                    color: '#555555', 
-                    marginTop: '4px',
-                    fontFamily: 'monospace',
-                    letterSpacing: '0.04em'
-                  }}>
-                    {tooltip.data.id.toUpperCase()}
-                  </div>
-                  <div className="tooltip-arrow" />
-                </div>
-              </div>
-            )}
-
             <div className="globe-caption">
-              <b>{NODE_DATA.length}</b> technologies · <b>{CONNECTIONS.length}</b> integrations · Click any node
+              {selectedTool ? (
+                <div>
+                  <b>{selectedTool.name}</b> — {selectedTool.blurb}
+                  <div>
+                    <button
+                      type="button"
+                      className="globe-ask"
+                      onClick={() => onSuggest?.(`Tell me about your experience with ${selectedTool.name}`)}
+                    >
+                      Ask about this <ArrowRight size={10} />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <span>Drag to rotate, or tap a node — {TOOLS.length} tools wired into one pipeline.</span>
+              )}
             </div>
           </motion.div>
 
@@ -720,7 +631,7 @@ export default function HeroSection({ onSuggest }) {
             to dashboards, email, or Telegram. Every project ships with real data and zero wasted clicks.
           </motion.p>
 
-          {/* ── Actions ── */}
+          {/* ── Actions, pills, socials ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-actions"
             style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginTop: '20px' }}>
             <button className="btn-white" data-cursor onClick={() => onSuggest?.('Show me your projects')}
@@ -732,7 +643,6 @@ export default function HeroSection({ onSuggest }) {
             </button>
           </motion.div>
 
-          {/* ── Tech Pills ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-pills tech-pill-row" style={{ marginTop: '6px' }}>
             {TECH_PILLS.map((t, i) => (
               <span key={t} style={{
@@ -747,7 +657,6 @@ export default function HeroSection({ onSuggest }) {
             ))}
           </motion.div>
 
-          {/* ── Social ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-social"
             style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap', marginTop: '6px' }}>
             {SOCIAL.map(({ label, url, Icon }) => (
@@ -762,7 +671,7 @@ export default function HeroSection({ onSuggest }) {
             ))}
           </motion.div>
 
-          {/* ── Stats ── */}
+          {/* ── Stat strip ── */}
           <motion.div variants={fadeInUp} initial="hidden" animate="visible" className="area-stats hero-stat-strip"
             style={{ paddingTop: '18px', borderTop: '1px solid rgba(255,255,255,0.05)', alignSelf: 'start' }}>
             {STATS.map(({ num, label }) => (
@@ -774,7 +683,7 @@ export default function HeroSection({ onSuggest }) {
           </motion.div>
         </div>
 
-        {/* ── Bottom Bar ── */}
+        {/* ── Bottom bar ── */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
           className="hero-bottom-bar"
           style={{
