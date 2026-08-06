@@ -144,7 +144,7 @@ export default function Header() {
 
 
           <a
-            href="/jhonson_cv.pdf"
+            href="/download/jhonson_cv.pdf"
             download
             className="mt-2 inline-flex w-fit items-center gap-2 rounded-md border border-white/15 px-4 py-2 text-sm font-medium text-[#d6d6d6] transition-all duration-300 hover:border-white/35 hover:text-white"
           >
