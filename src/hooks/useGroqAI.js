@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { GROQ_API_KEY, GROQ_MODEL, GROQ_URL } from '../config/groq.js';
+import { GROQ_API_KEY, GROQ_MODEL } from '../config/groq.js';
 import { KNOWLEDGE_BASE } from '../data/knowledgeBase.js';
 
 export function useGroqAI() {
@@ -12,29 +12,36 @@ export function useGroqAI() {
 
     const systemPrompt = KNOWLEDGE_BASE + (contextHint ? `\n\nCurrent context: ${contextHint}` : '');
 
-    const messages = [
-      ...conversationHistory.slice(-6).map(m => ({
-        role: m.role,
-        content: m.content,
-      })),
-      { role: 'user', content: userMessage },
+    // Map message roles: Gemini requires 'model' instead of 'assistant'
+    const formattedHistory = conversationHistory.slice(-6).map(m => ({
+      role: m.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: m.content }],
+    }));
+
+    const contents = [
+      ...formattedHistory,
+      { role: 'user', parts: [{ text: userMessage }] }
     ];
 
     try {
-      const response = await fetch(GROQ_URL, {
+      // Automatically fall back to gemini-3.6-flash if VITE_GROQ_MODEL contains a Groq model name
+      const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-3.6-flash';
+      const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`;
+
+      const response = await fetch(geminiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${GROQ_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          model: GROQ_MODEL,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            ...messages,
-          ],
-          max_tokens: 300,
-          temperature: 0.7,
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          contents: contents,
+          generationConfig: {
+            maxOutputTokens: 300,
+            temperature: 0.7,
+          }
         }),
       });
 
@@ -44,7 +51,8 @@ export function useGroqAI() {
       }
 
       const data = await response.json();
-      const reply = data.choices[0].message.content;
+      const reply = data.candidates[0].content.parts[0].text;
+      
       setIsLoading(false);
       return reply;
     } catch (err) {
