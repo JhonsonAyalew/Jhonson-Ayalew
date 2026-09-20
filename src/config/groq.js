@@ -1,3 +1,3 @@
-export const GROQ_API_KEY = import.meta.env.VITE_GROK;
-export const GROQ_MODEL = import.meta.env.VITE_MODEL;
-export const GROQ_URL = import.meta.env.VITE_GROQ_URL;
+// MUST use VITE_ prefix for Vite to bundle it into React
+export const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+export const GROQ_MODEL = import.meta.env.VITE_GROQ_MODEL || 'gemini-3.6-flash';
