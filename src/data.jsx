@@ -1,5 +1,5 @@
 import { Bot, Building2, Layers, Mail, RadioTower, Workflow } from 'lucide-react'
-import { GROQ_API_KEY, GROQ_MODEL, GROQ_URL } from './config/groq.js'
+import { GROQ_API_KEY, GROQ_MODEL } from './config/groq.js'
 import { KNOWLEDGE_BASE } from './data/knowledgeBase.js'
 
 export const navLinks = [
@@ -290,36 +290,45 @@ export const agentWelcome =
   "Hi, I'm Jhonson's AI agent. Ask me anything about his work, skills, projects, or how to hire him — I'll answer right here."
 
 export async function askAgent(prompt, conversationHistory = []) {
-  const messages = [
-    ...conversationHistory.slice(-6).map((m) => ({
-      role: m.role,
-      content: m.content,
-    })),
-    { role: 'user', content: prompt },
+  if (!GROQ_API_KEY || GROQ_API_KEY === 'undefined') {
+    throw new Error('API Key is missing or undefined. Check your VITE_GROQ_API_KEY environment variable.')
+  }
+
+  const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-1.5-flash'
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`
+
+  const formattedHistory = conversationHistory.slice(-6).map((m) => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }],
+  }))
+
+  const contents = [
+    ...formattedHistory,
+    { role: 'user', parts: [{ text: prompt }] },
   ]
 
-  const response = await fetch(GROQ_URL, {
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${GROQ_API_KEY}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: GROQ_MODEL,
-      messages: [
-        { role: 'system', content: KNOWLEDGE_BASE },
-        ...messages,
-      ],
-      max_tokens: 300,
-      temperature: 0.7,
+      systemInstruction: {
+        parts: [{ text: KNOWLEDGE_BASE }],
+      },
+      contents: contents,
+      generationConfig: {
+        maxOutputTokens: 300,
+        temperature: 0.7,
+      },
     }),
   })
 
+  const data = await response.json()
+
   if (!response.ok) {
-    const errData = await response.json()
-    throw new Error(errData.error?.message || `HTTP ${response.status}`)
+    throw new Error(data.error?.message || `HTTP ${response.status}`)
   }
 
-  const data = await response.json()
-  return data.choices[0].message.content
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.'
 }
