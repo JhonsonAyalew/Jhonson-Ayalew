@@ -10,9 +10,17 @@ export function useGroqAI() {
     setIsLoading(true);
     setError(null);
 
+    // 1. Check if the API key loaded properly
+    if (!GROQ_API_KEY || GROQ_API_KEY === 'undefined') {
+      const missingKeyErr = 'Gemini API Key is missing or undefined. Check your VITE_GROQ_API_KEY environment variable.';
+      console.error('❌ API Error:', missingKeyErr);
+      setIsLoading(false);
+      setError(missingKeyErr);
+      throw new Error(missingKeyErr);
+    }
+
     const systemPrompt = KNOWLEDGE_BASE + (contextHint ? `\n\nCurrent context: ${contextHint}` : '');
 
-    // Map message roles: Gemini requires 'model' instead of 'assistant'
     const formattedHistory = conversationHistory.slice(-6).map(m => ({
       role: m.role === 'assistant' ? 'model' : 'user',
       parts: [{ text: m.content }],
@@ -24,7 +32,6 @@ export function useGroqAI() {
     ];
 
     try {
-      // Automatically fall back to gemini-3.6-flash if VITE_GROQ_MODEL contains a Groq model name
       const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-3.6-flash';
       const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`;
 
@@ -45,12 +52,12 @@ export function useGroqAI() {
         }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.error?.message || `HTTP ${response.status}`);
+        throw new Error(data.error?.message || `HTTP ${response.status}`);
       }
 
-      const data = await response.json();
       const reply = data.candidates[0].content.parts[0].text;
       
       setIsLoading(false);
