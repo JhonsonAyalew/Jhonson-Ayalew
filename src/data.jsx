@@ -294,7 +294,7 @@ export async function askAgent(prompt, conversationHistory = []) {
     throw new Error('API Key is missing or undefined. Check your VITE_GROQ_API_KEY environment variable.')
   }
 
-  const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-1.5-flash'
+  const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-2.5-flash-lite'
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`
 
   const formattedHistory = conversationHistory.slice(-6).map((m) => ({
