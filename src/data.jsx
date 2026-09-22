@@ -294,8 +294,18 @@ export async function askAgent(prompt, conversationHistory = []) {
     throw new Error('API Key is missing or undefined. Check your VITE_GROQ_API_KEY environment variable.')
   }
 
-  const modelName = (GROQ_MODEL && GROQ_MODEL.includes('gemini')) ? GROQ_MODEL : 'gemini-2.5-flash-lite'
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`
+  // Google's model catalog on the free tier has been unstable lately — specific
+  // version names (gemini-2.5-flash-lite, gemini-2.5-flash, etc.) can 404 even
+  // when they're listed as available. The "-latest" aliases auto-resolve to
+  // whichever build is currently live, so we try a short chain of them and
+  // only fail if every candidate 404s.
+  const candidates = [
+    ...(GROQ_MODEL && GROQ_MODEL.includes('gemini') ? [GROQ_MODEL] : []),
+    'gemini-flash-lite-latest',
+    'gemini-flash-latest',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-flash',
+  ].filter((m, i, arr) => arr.indexOf(m) === i) // dedupe
 
   const formattedHistory = conversationHistory.slice(-6).map((m) => ({
     role: m.role === 'assistant' ? 'model' : 'user',
@@ -307,27 +317,40 @@ export async function askAgent(prompt, conversationHistory = []) {
     { role: 'user', parts: [{ text: prompt }] },
   ]
 
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  const body = JSON.stringify({
+    systemInstruction: {
+      parts: [{ text: KNOWLEDGE_BASE }],
     },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: KNOWLEDGE_BASE }],
-      },
-      contents: contents,
-      generationConfig: {
-        maxOutputTokens: 300,
-        temperature: 0.7,
-      },
-    }),
+    contents: contents,
+    generationConfig: {
+      maxOutputTokens: 300,
+      temperature: 0.7,
+    },
   })
 
-  const data = await response.json()
+  let data, response, lastError
+  for (const modelName of candidates) {
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GROQ_API_KEY}`
+    response = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body,
+    })
+    data = await response.json()
 
-  if (!response.ok) {
-    throw new Error(data.error?.message || `HTTP ${response.status}`)
+    if (response.ok) {
+      lastError = null
+      break
+    }
+
+    lastError = data.error?.message || `HTTP ${response.status}`
+    // Only fall through to the next model on a 404 (model unavailable).
+    // Any other error (bad key, quota, etc.) should surface immediately.
+    if (response.status !== 404) break
+  }
+
+  if (lastError) {
+    throw new Error(lastError)
   }
 
   return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.'
